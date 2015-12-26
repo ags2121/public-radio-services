@@ -1,6 +1,6 @@
 /lib/
 /targets/
-/target
+public-radio-services/target/
 .lein-deps-sum
 *iml
 /puppet

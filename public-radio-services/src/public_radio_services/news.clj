@@ -19,20 +19,20 @@
                NPR-API-KEY
                "&output=JSON&numResults=1&fields=storyDate,audio")}])
 
-(defn get-feed [news channel]
-  (httpkit/get (:url news) #(go (>! channel {(:type news) %}))))
+(defn get-ajax-channel [news-source]
+  (let [c (chan)]
+    (httpkit/get (:url news-source) #(go (>! c {(:type news-source) %})))
+    c))
 
-;(defn get-news [news-endpoints]
-;  (let [news-count (count news-endpoints)
-;        chans (repeatedly news-count chan)
-;        results (atom [])]
-;    (go (while (not= (count results) news-count)
-;          (let [[v ch] (alts! [chans])]
-;            (swap! results conj v))))
-;    (dotimes [ch chans]
-;           (httpkit/get ))
-;    )
-;  )
+(defn get-news [news-sources]
+  (let [channels (map get-ajax-channel news-sources)
+        results (atom [])]
+    (go (doseq [chan channels]
+          (swap! results conj (<! chan))))
+    (loop [res @results]
+      (if (= (count res) (count news-sources))
+        res
+        (recur @results)))))
 
 ;var podcastInfos = [{
 ;                     type: 'pri',
