@@ -10,7 +10,8 @@
                  [clj-time "0.11.0"]
                  [ring/ring-json "0.4.0"]
                  [http-kit "2.1.18"]
-                 [org.clojure/core.async "0.2.374"]]
+                 [org.clojure/core.async "0.2.374"]
+                 [org.clojure/data.json "0.2.6"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler public-radio-services.handler/app
          :auto-reload? true
