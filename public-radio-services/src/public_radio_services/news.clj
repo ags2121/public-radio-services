@@ -21,17 +21,15 @@
     {:url story-url :pubDate story-date}))
 
 (def ^:private NEWS-ENDPOINTS
-  [{:type "pri"
+  [{:type :pri
     :url "http://www.pri.org/programs/3704/episodes/feed"
     :parser rss-parser}
-   {:type "bbc-global"
+   {:type :bbc-global
     :url "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss"
     :parser rss-parser}
-   {:type "npr"
-    :url  (str "https://api.npr.org/query?id=500005"
-               "profileTypeId=15&meta=inherit&apiKey="
-               NPR-API-KEY
-               "&output=JSON&numResults=1&fields=storyDate,audio")
+   {:type :npr
+    :url (str "https://api.npr.org/query?apiKey=" NPR-API-KEY
+              "&output=JSON&numResults=1&fields=storyDate,audio")
     :parser npr-parser}])
 
 (defn ^:private get-ajax-channel [news-source]

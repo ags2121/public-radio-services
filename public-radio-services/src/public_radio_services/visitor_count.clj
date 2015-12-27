@@ -20,5 +20,5 @@
         now (t/now)
         updated-cookies (save-or-update-cookie! cookie now)
         visitor-count (calculate-visitor-count updated-cookies now)]
-    {:body    {:count visitor-count}
-     :cookies {COOKIE-NAME cookie}}))
+    {:count visitor-count
+     :cookie cookie}))

@@ -4,7 +4,8 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.params         :refer [wrap-params]]
             [ring.middleware.json :refer [wrap-json-response]]
-            [public-radio-services.visitor-count :as vc]))
+            [public-radio-services.visitor-count :as vc]
+            [public-radio-services.news :as news]))
 
 (defn wrap-log-request [handler]
   (fn [req]
@@ -13,8 +14,11 @@
 
 (defroutes routes
   (GET "/visitor-count" {cookies :cookies}
-    (vc/get-visitor-count cookies))
-  (GET "/news" [] {:body {:news {}}}))
+    (let [{cookie :cookie count :count} (vc/get-visitor-count cookies)]
+      {:cookies {vc/COOKIE-NAME cookie}
+       :body    {:count count}}))
+  (GET "/news" []
+    {:body {:news (news/get-news)}}))
 
 (def app (-> routes
              wrap-log-request
