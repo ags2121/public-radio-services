@@ -27,7 +27,8 @@
     :url "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss"
     :parser rss-parser}
    {:type :npr
-    :url (str "https://api.npr.org/query?apiKey=" NPR-API-KEY
+    :url (str "https://api.npr.org/query?d=500005&profileTypeId=15"
+              "&apiKey=" NPR-API-KEY
               "&output=JSON&numResults=1&fields=storyDate,audio")
     :parser npr-parser}])
 
