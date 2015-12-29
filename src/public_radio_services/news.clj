@@ -1,11 +1,10 @@
 (ns public-radio-services.news
   (:require [org.httpkit.client :as httpkit]
-            [clojure.edn :as edn]
             [clojure.core.async :refer [chan go >! <!]]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [environ.core :refer [env]]))
 
-(def ^:private NPR-API-KEY
-  (:npr-api-key (edn/read-string (slurp "src/public_radio_services/config.edn"))))
+(def NPR-API-KEY (env :npr-api-key))
 
 (defn- ^:private rss-parser [text]
   (let [regex-func (fn [regex] ((re-find regex text) 1))
