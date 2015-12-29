@@ -1,10 +1,7 @@
 /lib/
 /targets/
-public-radio-services/target/
-.lein-deps-sum
+/target/
 *iml
-/puppet
-.vagrant
 .idea
 /classes
 /checkouts

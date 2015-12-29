@@ -18,5 +18,5 @@
          :nrepl {:start? true
                  :port 9998}}
   :profiles
-  {:dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
+    {:dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                         [ring/ring-mock "0.3.0"]]}})
