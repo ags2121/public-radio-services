@@ -11,12 +11,16 @@
                  [ring/ring-json "0.4.0"]
                  [http-kit "2.1.18"]
                  [org.clojure/core.async "0.2.374"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [environ "1.0.1"]]
+  :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler public-radio-services.handler/app
          :auto-reload? true
          :nrepl {:start? true
                  :port 9998}}
+  :uberjar-name "public-radio-services-standalone.jar"
   :profiles
     {:dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
-                        [ring/ring-mock "0.3.0"]]}})
+                        [ring/ring-mock "0.3.0"]]}
+     :production {:env {:production true}}})
