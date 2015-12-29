@@ -12,3 +12,4 @@ pom.xml.asc
 *.lein-*
 *.nrepl-port
 config.edn
+.DS_Store
