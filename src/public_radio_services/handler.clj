@@ -6,6 +6,7 @@
             [ring.middleware.params         :refer [wrap-params]]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
+            [ring.util.response :refer [get-header header]]
             [public-radio-services.visitor-count :as vc]
             [public-radio-services.news :as news]
             [ring.adapter.jetty :as jetty]
@@ -20,9 +21,15 @@
     {:body {:news (news/get-news)}})
   (route/not-found {:body {:suh :dude}}))
 
+(defn wrap-allow-cors-credentials [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (assoc-in response [:headers  "Access-Control-Allow-Credentials"] "true"))))
+
 (def app (-> routes
              (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://www.publicradio.info"]
                         :access-control-allow-methods [:get :post])
+             wrap-allow-cors-credentials
              wrap-cookies
              wrap-params
              wrap-json-response))
