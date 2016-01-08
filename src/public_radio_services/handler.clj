@@ -5,6 +5,7 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.params         :refer [wrap-params]]
             [ring.middleware.json :refer [wrap-json-response]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [public-radio-services.visitor-count :as vc]
             [public-radio-services.news :as news]
             [ring.adapter.jetty :as jetty]
@@ -20,6 +21,7 @@
   (route/not-found {:body {:suh :dude}}))
 
 (def app (-> routes
+             (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://publicradioservices.info"])
              wrap-cookies
              wrap-params
              wrap-json-response))
