@@ -42,7 +42,7 @@
 
 (defn get-news []
   (let [channels (map get-ajax-channel NEWS-ENDPOINTS)
-        results (atom [])]
+        results (atom {})]
     (go (doseq [chan channels]
           (swap! results conj (<! chan))))
     (loop [res @results]

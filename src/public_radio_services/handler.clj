@@ -21,7 +21,8 @@
   (route/not-found {:body {:suh :dude}}))
 
 (def app (-> routes
-             (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://publicradioservices.info"])
+             (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://publicradioservices.info"]
+                        :access-control-allow-methods [:get :post])
              wrap-cookies
              wrap-params
              wrap-json-response))
