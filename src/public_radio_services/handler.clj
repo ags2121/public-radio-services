@@ -19,7 +19,7 @@
        :body    {:count count}}))
   (GET "/news" []
     {:body {:news (news/get-news)}})
-  (route/not-found {:body {:suh :dude}}))
+  (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
 
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
