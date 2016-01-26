@@ -1,5 +1,5 @@
 (ns public-radio-services.handler
-  (:require [compojure.core :refer [GET ANY defroutes]]
+  (:require [compojure.core :refer [GET POST ANY defroutes]]
             [compojure.route :as route]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
@@ -10,7 +10,40 @@
             [public-radio-services.services.visitor-count :as vc]
             [public-radio-services.services.news :as news]
             [ring.adapter.jetty :as jetty]
+            [liberator.core :refer [defresource]]
             [environ.core :refer [env]]))
+
+(defn validate-request [{podcast-info "podcast-info" podcast-url "podcast-url"}]
+  (let [errors {}
+        errors (conj errors (if (clojure.string/blank? podcast-info)
+                                  {::podcast-info ::not-present}
+                                  {} ))
+        errors (conj errors (if (and
+                                  (not (clojure.string/blank? podcast-url))
+                                  (empty? (re-matches #"(.*?).(mp3|MP3|rss|RSS)" podcast-url)))
+                              {::podcast-url ::not-valid}
+                              {} ))]
+    errors))
+
+(defresource request
+             :allowed-methods [:post]
+             :available-media-types ["application/json"]
+             :processable?
+             (fn [ctx]
+               (let [params (get-in ctx [:request :params])
+                     errors (validate-request params)]
+                 (if (empty? errors)
+                   true
+                   [false (assoc ctx ::errors errors)])))
+             :handle-unprocessable-entity
+             (fn [ctx]
+               (::errors ctx))
+             :post!
+             (fn [ctx]
+               {:yo :bro})
+            :handle-created
+            (fn [ctx]
+              {:yo :bro}))
 
 (defroutes routes
   (GET "/visitor-count" {cookies :cookies}
@@ -19,6 +52,7 @@
        :body    {:count count}}))
   (GET "/news" []
     {:body {:news (news/get-news)}})
+  (POST "/request" [] request)
   (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
 
 (defn wrap-allow-cors-credentials [handler]

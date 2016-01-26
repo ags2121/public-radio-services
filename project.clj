@@ -8,6 +8,7 @@
                  [com.amazonaws/aws-java-sdk-dynamodb "1.9.39" :exclusions [joda-time]]
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
+                 [liberator "0.14.0"]
                  [ring-cors "0.1.7"]
                  [compojure "1.4.0"]
                  [clj-time "0.11.0"]
