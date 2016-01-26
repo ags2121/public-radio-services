@@ -7,8 +7,8 @@
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [get-header header]]
-            [public-radio-services.visitor-count :as vc]
-            [public-radio-services.news :as news]
+            [public-radio-services.services.visitor-count :as vc]
+            [public-radio-services.services.news :as news]
             [ring.adapter.jetty :as jetty]
             [environ.core :refer [env]]))
 

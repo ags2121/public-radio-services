@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest testing is]]
             [ring.mock.request :refer [request header]]
             [public-radio-services.handler :as h]
-            [public-radio-services.visitor-count :as vc]))
+            [public-radio-services.services.visitor-count :as vc]))
 
 (defn- get-cookie [response]
   (get (:cookies response) vc/COOKIE-NAME))

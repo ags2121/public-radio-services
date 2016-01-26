@@ -1,4 +1,4 @@
-(ns public-radio-services.visitor-count
+(ns public-radio-services.services.visitor-count
   (:require [clj-time.core :as t])
   (:import [java.util UUID]))
 

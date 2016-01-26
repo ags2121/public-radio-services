@@ -1,4 +1,4 @@
-(ns public-radio-services.news
+(ns public-radio-services.services.news
   (:require [org.httpkit.client :as httpkit]
             [clojure.core.async :refer [chan go >! <!]]
             [clojure.data.json :as json]
