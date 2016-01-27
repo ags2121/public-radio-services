@@ -10,7 +10,7 @@
   (swap! stored-cookies assoc cookie time))
 
 (defn- ^:private calculate-visitor-count [cookies current-time]
-  (let [ago (t/minus current-time (t/hours 24))]
+  (let [ago (t/minus current-time (t/minutes 1))]
     (count (filter #(t/within? ago current-time (val %1)) cookies))))
 
 (defn ^:private delete-cookie! [cookie]
