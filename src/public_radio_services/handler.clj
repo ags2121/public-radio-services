@@ -46,13 +46,21 @@
               {:yo :bro}))
 
 (defroutes routes
-  (GET "/visitor-count" {cookies :cookies}
-    (let [{cookie :cookie count :count} (vc/get-visitor-count cookies)]
-      {:cookies {vc/COOKIE-NAME cookie}
-       :body    {:count count}}))
+  (ANY "/visitor-count" {cookies :cookies request-method :request-method}
+    (case request-method
+      :get
+      (let [{cookie :cookie count :count} (vc/get-visitor-count cookies)]
+        {:cookies {vc/COOKIE-NAME cookie}
+         :body    {:count count}})
+      :post
+      (let [response (future (vc/delete-visitor! cookies))] ; we dont care if this doesn't return
+        {})))
+
   (GET "/news" []
     {:body {:news (news/get-news)}})
+
   (POST "/request" [] request)
+
   (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
 
 (defn wrap-allow-cors-credentials [handler]
