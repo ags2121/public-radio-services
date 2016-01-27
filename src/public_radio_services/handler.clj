@@ -42,7 +42,7 @@
              (fn [ctx]
                {:yo :bro})
             :handle-created
-            (fn [ctx]
+            (fn [ctxs]
               {:yo :bro}))
 
 (defroutes routes
