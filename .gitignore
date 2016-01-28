@@ -13,5 +13,4 @@ pom.xml.asc
 *.nrepl-port
 config.edn
 .DS_Store
-*.properties
 profiles.clj
