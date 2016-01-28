@@ -23,7 +23,7 @@
              {:body {:news (news/get-news)}})
 
            (POST "/requests" [] post-request)
-           (GET "/requests" [] get-requests)
+           (GET "/requests" [] (requests/get-requests))
 
            (ANY "/visitor-count" {cookies :cookies request-method :request-method}
              (case request-method
@@ -54,11 +54,6 @@
                      request-id (-> saved-request :tempids vals first)]
                  {::request-id (str request-id)}))
             :handle-created ::request-id)
-
-(defresource get-requests
-             :allowed-methods [:get]
-             :available-media-types ["application/json"]
-             :handle-ok (fn [_] (requests/get-requests)))
 
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
