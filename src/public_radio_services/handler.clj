@@ -9,64 +9,61 @@
             [ring.util.response :refer [get-header header]]
             [public-radio-services.services.visitor-count :as vc]
             [public-radio-services.services.news :as news]
+            [public-radio-services.services.requests :as requests]
             [ring.adapter.jetty :as jetty]
             [liberator.core :refer [defresource]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.string :only [blank?] :as string]))
 
-(defn validate-request [{podcast-info "podcast-info" podcast-url "podcast-url"}]
-  (let [errors {}
-        errors (conj errors (if (clojure.string/blank? podcast-info)
-                                  {::podcast-info ::not-present}
-                                  {} ))
-        errors (conj errors (if (and
-                                  (not (clojure.string/blank? podcast-url))
-                                  (empty? (re-matches #"(.*?).(mp3|MP3|rss|RSS)" podcast-url)))
-                              {::podcast-url ::not-valid}
-                              {} ))]
-    errors))
+(declare post-request)
+(declare get-requests)
 
-(defresource request
+(defroutes routes
+           (GET "/news" []
+             {:body {:news (news/get-news)}})
+
+           (POST "/requests" [] post-request)
+           (GET "/requests" [] get-requests)
+
+           (ANY "/visitor-count" {cookies :cookies request-method :request-method}
+             (case request-method
+               :get
+               (let [{cookie :cookie count :count} (vc/get-visitor-count cookies)]
+                 {:cookies {vc/COOKIE-NAME cookie}
+                  :body    {:count count}})
+               :post
+               (let [response (future (vc/delete-visitor! cookies))] ; we dont care if this doesn't return
+                 {})))
+
+           (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
+
+(defresource post-request
              :allowed-methods [:post]
              :available-media-types ["application/json"]
              :processable?
              (fn [ctx]
                (let [params (get-in ctx [:request :params])
-                     errors (validate-request params)]
+                     errors (requests/validate-request params)]
                  (if (empty? errors)
                    true
                    [false (assoc ctx ::errors errors)])))
-             :handle-unprocessable-entity
-             (fn [ctx]
-               (::errors ctx))
+             :handle-unprocessable-entity ::errors          ; clojure keywords are functions and liberator passes each handler the context
              :post!
              (fn [ctx]
-               {:yo :bro})
-            :handle-created
-            (fn [ctxs]
-              {:yo :bro}))
+               (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
+                     request-id (-> saved-request :tempids vals first)]
+                 {::request-id (str request-id)}))
+            :handle-created ::request-id)
 
-(defroutes routes
-  (ANY "/visitor-count" {cookies :cookies request-method :request-method}
-    (case request-method
-      :get
-      (let [{cookie :cookie count :count} (vc/get-visitor-count cookies)]
-        {:cookies {vc/COOKIE-NAME cookie}
-         :body    {:count count}})
-      :post
-      (let [response (future (vc/delete-visitor! cookies))] ; we dont care if this doesn't return
-        {})))
-
-  (GET "/news" []
-    {:body {:news (news/get-news)}})
-
-  (POST "/request" [] request)
-
-  (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
+(defresource get-requests
+             :allowed-methods [:get]
+             :available-media-types ["application/json"]
+             :handle-ok (fn [_] (requests/get-requests)))
 
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
     (let [response (handler request)]
-      (assoc-in response [:headers  "Access-Control-Allow-Credentials"] "true"))))
+      (assoc-in response [:headers "Access-Control-Allow-Credentials"] "true"))))
 
 (def app (-> routes
              (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://www.publicradio.info"]

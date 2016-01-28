@@ -1,0 +1,29 @@
+[
+ ;; request info
+ {:db/id #db/id[:db.part/db]
+  :db/ident :request/info
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/fulltext true
+  :db/doc "Information describing some public media"
+  :db.install/_attribute :db.part/db}
+
+ ;; request url
+ {:db/id #db/id[:db.part/db]
+  :db/ident :request/url
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/fulltext true
+  :db/unique :db.unique/identity
+  :db/doc "The URL for some public media"
+  :db.install/_attribute :db.part/db}
+
+ ;; request requestor name
+ {:db/id #db/id[:db.part/db]
+  :db/ident :request/requestor
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/fulltext true
+  :db/doc "The name of a requestor of some public media"
+  :db.install/_attribute :db.part/db}
+ ]

@@ -16,7 +16,8 @@
                  [http-kit "2.1.18"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/data.json "0.2.6"]
-                 [environ "1.0.1"]]
+                 [environ "1.0.1"]
+                 [mount "0.1.8"]]
   :repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
                                    :username :env/datomic_username
                                    :password :env/datomic_password}}
