@@ -4,7 +4,9 @@
             [environ.core :refer [env]]
             [clojure.string :only [blank?] :as string]))
 
-(def conn (d/connect (env :database-url)))
+; these are functions and not values because I couldn't compile the tests with them as values
+(defn conn [] (d/connect (env :database-url)))
+(defn db [] (d/db (conn)))
 
 (def rules
   '[[[attr-in-namespace ?e ?ns2]
@@ -31,7 +33,7 @@
                     :where
                     (attr-in-namespace ?a "request")
                     [?e ?a]]
-                  (d/db conn) rules)))
+                  (db) rules)))
 
 (defn save-request! [{info "info" url "url" requestor "requestor"}]
   (if (not (string/blank? info))
@@ -43,4 +45,4 @@
           tx-data-with-requestor (conj tx-data-with-url (if (string/blank? requestor)
                                           {}
                                           {:request/requestor requestor}))]
-      @(d/transact conn [tx-data-with-requestor]))))
+      @(d/transact (conn) [tx-data-with-requestor]))))
