@@ -47,13 +47,15 @@
                  (if (empty? errors)
                    true
                    [false (assoc ctx ::errors errors)])))
-             :handle-unprocessable-entity ::errors          ; clojure keywords are functions and liberator passes each handler the context
+             :handle-unprocessable-entity
+             (fn [ctx] {::errors (::errors ctx)}) ; clojure keywords are functions and liberator passes each handler the context
              :post!
              (fn [ctx]
                (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
                      request-id (-> saved-request :tempids vals first)]
                  {::request-id (str request-id)}))
-            :handle-created ::request-id)
+            :handle-created
+             (fn [ctx] {::id (::request-id ctx)}))
 
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
