@@ -31,9 +31,9 @@
                                 {})))
         errors (conj errors (if (and
                                   (not (string/blank? url))
-                                  (is-valid-url url))
-                              {}
-                              {::url ::not-valid}))]
+                                  (not (is-valid-url url)))
+                              {::url ::not-valid}
+                              {}))]
     errors))
 
 (defn get-requests []
