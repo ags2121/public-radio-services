@@ -37,12 +37,15 @@
     errors))
 
 (defn get-requests []
-  (map first (d/q '[:find (pull ?e [*])
-                    :in $ %
-                    :where
-                    (attr-in-namespace ?a "request")
-                    [?e ?a]]
-                  (db) rules)))
+  (->> (d/q '[:find (pull ?e [*]) ?ts
+              :in $ %
+              :where
+              (attr-in-namespace ?a "request")
+              [?e ?a ?v ?tx]
+              [?tx :db/txInstant ?ts]]
+            (db) rules)
+       (map #(conj (first %) {:request/time (.toString (second %))}))
+       (sort-by :db/id >)))
 
 (defn save-request! [{info "info" url "url" requestor "requestor"}]
   (if (not (string/blank? info))
