@@ -3,7 +3,8 @@
             [datomic.api :only [db q] :as d]
             [environ.core :refer [env]]
             [clojure.string :only [blank?] :as string]
-            [org.httpkit.client :only [head] :as httpkit]))
+            [org.httpkit.client :only [head] :as httpkit])
+  (:import (java.util Date TimeZone)))
 
 ; these are functions and not values because I couldn't compile the tests with them as values
 (defn conn [] (d/connect (env :database-url)))
@@ -36,6 +37,12 @@
                               {}))]
     errors))
 
+(defn ^:private format-date [^Date date]
+  (.format (doto
+             (java.text.SimpleDateFormat. "MMM dd, yyyy hh:mm:ss a z")
+             (.setTimeZone (TimeZone/getTimeZone "EST")))
+           date))
+
 (defn get-requests []
   (->> (d/q '[:find (pull ?e [*]) ?ts
               :in $ %
@@ -44,7 +51,7 @@
               [?e ?a ?v ?tx]
               [?tx :db/txInstant ?ts]]
             (db) rules)
-       (map #(conj (first %) {:request/time (.toString (second %))}))
+       (map #(conj (first %) {:request/time (format-date (second %))}))
        (sort-by :db/id >)))
 
 (defn save-request! [{info "info" url "url" requestor "requestor"}]
