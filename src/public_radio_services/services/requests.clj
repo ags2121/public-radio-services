@@ -1,6 +1,5 @@
 (ns public-radio-services.services.requests
-  (:require [mount.core :refer [defstate]]
-            [datomic.api :only [db q] :as d]
+  (:require [datomic.api :only [db q] :as d]
             [environ.core :refer [env]]
             [clojure.string :only [blank?] :as string]
             [org.httpkit.client :only [head] :as httpkit])
