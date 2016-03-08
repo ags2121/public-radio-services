@@ -10,6 +10,7 @@
             [public-radio-services.services.visitor-count :as vc]
             [public-radio-services.services.news :as news]
             [public-radio-services.services.requests :as requests]
+            [public-radio-services.scheduler :as scheduler]
             [ring.adapter.jetty :as jetty]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
@@ -72,4 +73,5 @@
 
 (defn -main [& [port]]
   (let [port (Integer. ^int (or port (env :port) 5000))]
-    (jetty/run-jetty #'app {:port port :join? false})))
+    (jetty/run-jetty #'app {:port port :join? false})
+    (scheduler/poll-server)))
