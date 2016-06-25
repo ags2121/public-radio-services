@@ -3,9 +3,10 @@
   :url "https://github.com/radioopensource/public-radio-services"
   :license {:name "MIT"
             :url  "http://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [com.datomic/datomic-pro "0.9.5344"]
-                 [com.amazonaws/aws-java-sdk-dynamodb "1.9.39" :exclusions [joda-time]]
+  :dependencies [
+                 [org.clojure/clojure "1.8.0"]
+                 ;[com.amazonaws/aws-java-sdk-dynamodb "1.9.39" :exclusions [joda-time]]
+                 ;[com.datomic/datomic-pro "0.9.5344"]
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
                  [liberator "0.14.0"]
@@ -18,9 +19,9 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.0.1"]
                  [overtone/at-at "1.2.0"]]
-  :repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
-                                   :username :env/datomic_username
-                                   :password :env/datomic_password}}
+  ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
+  ;                                 :username :env/datomic_username
+  ;                                 :password :env/datomic_password}}
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.0.1"]]

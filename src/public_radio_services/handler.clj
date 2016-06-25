@@ -20,8 +20,11 @@
 (declare get-requests)
 
 (defroutes routes
-           (GET "/news" []
-             {:body {:news (news/get-news)}})
+           (GET "/newscasts" []
+             {:body {:newscasts (news/get-newscasts)}})
+
+           (GET "/podcasts" []
+             {:body {:podcasts (news/get-podcasts)}})
 
            (POST "/requests" [] post-request)
            (GET "/requests" [] (requests/get-requests))
@@ -37,6 +40,7 @@
                  {})))
 
            (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
+
 
 (defresource post-request
              :allowed-methods [:post]
