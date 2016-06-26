@@ -8,7 +8,7 @@
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [get-header header]]
             [public-radio-services.services.visitor-count :as vc]
-            [public-radio-services.services.news :as news]
+            [public-radio-services.services.fetcher :as news]
             [public-radio-services.services.requests :as requests]
             [public-radio-services.scheduler :as scheduler]
             [ring.adapter.jetty :as jetty]
