@@ -23,21 +23,24 @@
   (-> (get-xml-node parent-node tag) :attrs attr))
 
 (defn- ^:private rss-parser [text rss-url]
-  (let
-    [xml-sequence (xml-seq (xml/parse-str text))
-     resource-title (->> xml-sequence
-                         (filter #(= (:tag %) :title))
-                         first
-                         :content
-                         first)
-     first-item (->> xml-sequence
-                     (filter #(= (:tag %) :item))
-                     first)
-     title (get-xml-node-content first-item :title)
-     pubDate (get-xml-node-content first-item :pubDate)
-     url (get-xml-node-attribute first-item :enclosure :url)]
-
-    {:url url :pubDate pubDate :title title :rssUrl rss-url :resourceTitle resource-title}))
+  (let [parsed-xml (xml-seq (xml/parse-str text))
+        showTitle (->> parsed-xml
+                            (filter #(= (:tag %) :title))
+                            first
+                            :content
+                            first)
+        showUrl (->> parsed-xml
+                          (filter #(= (:tag %) :link))
+                          first
+                          :content
+                          first)
+        first-item (->> parsed-xml
+                        (filter #(= (:tag %) :item))
+                        first)
+        episodeTitle (get-xml-node-content first-item :title)
+        pubDate (get-xml-node-content first-item :pubDate)
+        url (get-xml-node-attribute first-item :enclosure :url)]
+    {:url url :pubDate pubDate :episodeTitle episodeTitle :rssUrl rss-url :showTitle showTitle :showUrl showUrl}))
 
 (defn- ^:private npr-parser [response _]
   (let [json-response (json/read-str response)
