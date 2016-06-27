@@ -22,18 +22,24 @@
 (defn- ^:private get-xml-node-attribute [parent-node tag attr]
   (-> (get-xml-node parent-node tag) :attrs attr))
 
-(defn- ^:private rss-parser [text]
-  (let [first-item (->> (xml/parse-str text)
-                        xml-seq
-                        (filter #(= (:tag %) :item))
-                        first)
-        title (get-xml-node-content first-item :title)
-        pubDate (get-xml-node-content first-item :pubDate)
-        url (get-xml-node-attribute first-item :enclosure :url)]
+(defn- ^:private rss-parser [text rss-url]
+  (let
+    [xml-sequence (xml-seq (xml/parse-str text))
+     resource-title (->> xml-sequence
+                         (filter #(= (:tag %) :title))
+                         first
+                         :content
+                         first)
+     first-item (->> xml-sequence
+                     (filter #(= (:tag %) :item))
+                     first)
+     title (get-xml-node-content first-item :title)
+     pubDate (get-xml-node-content first-item :pubDate)
+     url (get-xml-node-attribute first-item :enclosure :url)]
 
-    {:url url :pubDate pubDate :title title}))
+    {:url url :pubDate pubDate :title title :rssUrl rss-url :resourceTitle resource-title}))
 
-(defn- ^:private npr-parser [response]
+(defn- ^:private npr-parser [response _]
   (let [json-response (json/read-str response)
         latest-story (get-in json-response ["list" "story" 0])
         story-url (get-in latest-story ["audio" 0 "format" "mp3" 0 "$text"])
@@ -76,7 +82,7 @@
         url (:url news-source)
         type (:type news-source)
         parser (:parser news-source)]
-    (httpkit/get url #(go (>! c {type (parser (:body %))})))
+    (httpkit/get url #(go (>! c {type (parser (:body %) url)})))
     c))
 
 (defn ^:private get-resources [endpoints]
