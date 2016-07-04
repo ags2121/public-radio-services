@@ -1,4 +1,4 @@
-(ns public-radio-services.services.postgres
+(ns public-radio-services.services.db
   (:require
     [clojure.java.jdbc :as jdbc]
     [environ.core :refer [env]]))

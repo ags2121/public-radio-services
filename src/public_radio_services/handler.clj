@@ -3,7 +3,7 @@
             [compojure.route :as route]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [ring.middleware.params         :refer [wrap-params]]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [get-header header]]
@@ -15,7 +15,7 @@
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
             [clojure.string :only [blank?] :as string]
-            [public-radio-services.services.postgres :as db]))
+            [public-radio-services.services.db :as db]))
 
 (declare post-request)
 (declare get-requests)
@@ -54,13 +54,13 @@
                    true
                    [false (assoc ctx ::errors errors)])))
              :handle-unprocessable-entity
-             (fn [ctx] {::errors (::errors ctx)}) ; clojure keywords are functions and liberator passes each handler the context
+             (fn [ctx] {::errors (::errors ctx)})           ; clojure keywords are functions and liberator passes each handler the context
              :post!
              (fn [ctx]
                (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
                      request-id (:id saved-request)]
                  {::request-id (str request-id)}))
-            :handle-created
+             :handle-created
              (fn [ctx] {::id (::request-id ctx)}))
 
 (defn wrap-allow-cors-credentials [handler]

@@ -39,16 +39,12 @@
   :profiles
   {:dev           [:project/dev :profiles/dev]
    :test          [:project/test :profiles/test]
-   :project/dev   {:env {:dev          true
-                         :port         3000
-                         :nrepl-port   7000
-                         ;:database-url "datomic:dev://localhost:4334/public_radio_services"
-                         }}
-   :project/test  {:env {:test         true
-                         :port         3001
-                         :nrepl-port   7001
-                         ;:database-url "datomic:mem://public_radio_services"
-                         }
+   :project/dev   {:env {:dev        true
+                         :port       3000
+                         :nrepl-port 7000}}
+   :project/test  {:env {:test       true
+                         :port       3001
+                         :nrepl-port 7001}
                    :dependencies
                         [[javax.servlet/javax.servlet-api "3.1.0"]
                          [ring/ring-mock "0.3.0"]]}

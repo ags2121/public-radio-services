@@ -1,10 +1,8 @@
 (ns public-radio-services.services.requests
-  (:require
-    ;[datomic.api :only [db q] :as d]
-    [public-radio-services.services.postgres :as p]
-    [environ.core :refer [env]]
-    [clojure.string :only [blank?] :as string]
-    [org.httpkit.client :only [head] :as httpkit])
+  (:require [public-radio-services.services.db :as db]
+            [environ.core :refer [env]]
+            [clojure.string :only [blank?] :as string]
+            [org.httpkit.client :only [head] :as httpkit])
   (:import (java.util Date TimeZone)))
 
 (defn ^:private is-valid-url [url]
@@ -34,7 +32,7 @@
            date))
 
 (defn get-requests []
-  (p/get-requests))
+  (db/get-requests))
 
 (defn save-request! [request]
-  (p/save-request! request))
+  (db/save-request! request))
