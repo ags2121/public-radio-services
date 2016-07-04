@@ -19,10 +19,15 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.0.1"]
                  [overtone/at-at "1.2.0"]
-                 [org.clojure/data.xml "0.1.0-beta1"]]
+                 [org.clojure/data.xml "0.1.0-beta1"]
+                 [org.clojure/java.jdbc "0.3.6"]
+                 [clojure.jdbc/clojure.jdbc-c3p0 "0.3.1"]
+                 [postgresql/postgresql "9.1-901-1.jdbc4"]
+                 ]
   ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
   ;                                 :username :env/datomic_username
   ;                                 :password :env/datomic_password}}
+
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
             [lein-environ "1.0.1"]]

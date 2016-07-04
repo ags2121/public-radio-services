@@ -14,7 +14,8 @@
             [ring.adapter.jetty :as jetty]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
-            [clojure.string :only [blank?] :as string]))
+            [clojure.string :only [blank?] :as string]
+            [public-radio-services.services.postgres :as db]))
 
 (declare post-request)
 (declare get-requests)
@@ -57,7 +58,7 @@
              :post!
              (fn [ctx]
                (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
-                     request-id (-> saved-request :tempids vals first)]
+                     request-id (:id saved-request)]
                  {::request-id (str request-id)}))
             :handle-created
              (fn [ctx] {::id (::request-id ctx)}))
@@ -76,6 +77,7 @@
              wrap-json-response))
 
 (defn -main [& [port]]
+  (db/migrate)
   (let [port (Integer. ^int (or port (env :port) 5000))]
     (jetty/run-jetty #'app {:port port :join? false})
     (scheduler/poll-server)))

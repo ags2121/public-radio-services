@@ -1,3 +1,4 @@
+;; NOT USED
 (comment (ns public-radio-services.services.datomic
    (:require
      [datomic.api :only [db q] :as d]
@@ -27,10 +28,10 @@
          (map #(conj (first %) {:request/time (second %)}))
          (sort-by :db/id >)))
 
-  (defn save-request! [{info "info" url "url" requestor "requestor"}]
-    (if (not (string/blank? info))
+  (defn save-request! [{name "name" url "url" requestor "requestor"}]
+    (if (not (string/blank? name))
       (let [tx-data {:db/id        #db/id[:db.part/user]
-                     :request/info info}
+                     :request/name name}
             tx-data-with-url (conj tx-data (if (string/blank? url)
                                              {}
                                              {:request/url url}))

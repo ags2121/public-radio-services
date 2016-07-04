@@ -13,12 +13,12 @@
               url)]
     (nil? (:error @(httpkit/head url)))))
 
-(defn validate-request [{info "info" url "url"}]
+(defn validate-request [{name "name" url "url"}]
   (let [errors {}
-        errors (conj errors (if (string/blank? info)
-                              {::info ::not-present}
-                              (if (> (count info) 200)
-                                {::info ::too-long}
+        errors (conj errors (if (string/blank? name)
+                              {::name ::not-present}
+                              (if (> (count name) 200)
+                                {::name ::too-long}
                                 {})))
         errors (conj errors (if (and
                                   (not (string/blank? url))
