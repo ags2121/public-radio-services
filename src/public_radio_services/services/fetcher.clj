@@ -87,7 +87,7 @@
    (xml-resource :snapjudgement "http://feeds.wnyc.org/snapjudgment-wnyc")
    (xml-resource :worldinwords "http://feeds.feedburner.com/pri/world-words")
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss")
-   (xml-resource :afropop "http://www.afropop.org/podcast/")
+   (xml-resource :afropop "http://www.afropop.org/podcast/" "Afropop Worldwide")
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url type parser showTitle]}]
