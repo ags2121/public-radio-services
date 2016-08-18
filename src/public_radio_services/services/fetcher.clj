@@ -70,7 +70,7 @@
 
 (def ^:private PODCAST-ENDPOINTS
   [(xml-resource :reveal "http://feeds.revealradio.org/revealpodcast.xml")
-   (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss")
+   (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" "The NYPL Podcast")
    (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source "http://radioopensource.org/feed/" "Open Source")
    (xml-resource :radiolab "http://feeds.wnyc.org/radiolab")
