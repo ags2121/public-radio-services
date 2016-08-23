@@ -23,11 +23,11 @@
 (defn- ^:private get-xml-node-attribute [parent-node tag attr]
   (-> (get-xml-node parent-node tag) :attrs attr))
 
-(defn- ^:private xml-parser [text rss-url showTitle]
+(defn- ^:private xml-parser [text]
   (let [parsed-xml (xml-seq (xml/parse-str text))
-        showTitle (or showTitle (->> parsed-xml
-                                     (filter #(= (:tag %) :title))
-                                     first :content first))
+        showTitle (->> parsed-xml
+                       (filter #(= (:tag %) :title))
+                       first :content first)
         genre (some->> parsed-xml
                        (filter #(= (:tag %) (name/canonical-name "http://www.itunes.com/dtds/podcast-1.0.dtd" "category" "itunes")))
                        first :attrs first val)
@@ -40,7 +40,7 @@
         episodeTitle (get-xml-node-content first-item :title)
         pubDate (get-xml-node-content first-item :pubDate)
         url (get-xml-node-attribute first-item :enclosure :url)]
-    {:url url :pubDate pubDate :episodeTitle episodeTitle :rssUrl rss-url :showTitle showTitle :showUrl showUrl :genre genre}))
+    {:url url :pubDate pubDate :episodeTitle episodeTitle :showTitle showTitle :showUrl showUrl :genre genre}))
 
 ;; currently only implemented for npr specific endpoints
 (defn- ^:private api-parser [response _ _]
@@ -50,14 +50,17 @@
         story-date (get-in latest-story ["storyDate" "$text"])]
     {:url story-url :pubDate story-date}))
 
-(defrecord Resource [type url parser showTitle])
+(defrecord Resource [name url parser post-processing-fn])
 
 (defn xml-resource
-  ([type url] (->Resource type url xml-parser nil))
-  ([type url showTitle] (->Resource type url xml-parser showTitle)))
+  ([name url] (->Resource name url xml-parser identity))
+  ([name url post-processing-fn] (->Resource name url xml-parser post-processing-fn)))
 
-(defn api-resource [type url]
-  (->Resource type url api-parser nil))
+(defn api-resource [name url]
+  (->Resource name url api-parser identity))
+
+(defn override-title [title]
+  #(assoc % :showTitle title))
 
 (def ^:private NEWSCAST-ENDPOINTS
   [(api-resource :npr NPR-ENDPOINT)
@@ -70,15 +73,15 @@
 
 (def ^:private PODCAST-ENDPOINTS
   [(xml-resource :reveal "http://feeds.revealradio.org/revealpodcast.xml")
-   (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" "The NYPL Podcast")
+   (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
    (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
-   (xml-resource :open-source "http://radioopensource.org/feed/" "Open Source")
+   (xml-resource :open-source "http://radioopensource.org/feed/" (override-title "Open Source"))
    (xml-resource :radiolab "http://feeds.wnyc.org/radiolab")
-   (xml-resource :radiotonic "http://www.abc.net.au/radionational/feed/5421356/podcast.xml" "Radiotonic")
-   (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" "FACT Mixes")
+   (xml-resource :radiotonic "http://www.abc.net.au/radionational/feed/5421356/podcast.xml" (override-title "Radiotonic"))
+   (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
-   (xml-resource :ideas "http://www.cbc.ca/podcasting/includes/ideas.xml" "CBC Radio's Ideas")
+   (xml-resource :ideas "http://www.cbc.ca/podcasting/includes/ideas.xml" (override-title "CBC Radio's Ideas"))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf")
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to")
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
@@ -86,13 +89,19 @@
    (xml-resource :bodegaboys "http://feeds.soundcloud.com/users/soundcloud:users:169774121/sounds.rss")
    (xml-resource :snapjudgement "http://feeds.wnyc.org/snapjudgment-wnyc")
    (xml-resource :worldinwords "http://feeds.feedburner.com/pri/world-words")
-   (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss")
+   (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
+                 (fn [m]
+                   (update-in m [:episodeTitle] #(clojure.string/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" ""))))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
    ])
 
-(defn ^:private get-ajax-channel [{:keys [url type parser showTitle]}]
+(defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
   (let [c (chan)]
-    (httpkit/get url #(go (>! c {type (parser (:body %) url showTitle)})))
+    (httpkit/get url #(go (>! c
+                              {name (-> (:body %)
+                                        parser
+                                        (assoc :rssUrl url)
+                                        post-processing-fn)})))
     c))
 
 (defn ^:private get-resources [endpoints]
