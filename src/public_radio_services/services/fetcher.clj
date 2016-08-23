@@ -43,7 +43,7 @@
     {:url url :pubDate pubDate :episodeTitle episodeTitle :showTitle showTitle :showUrl showUrl :genre genre}))
 
 ;; currently only implemented for npr specific endpoints
-(defn- ^:private api-parser [response _ _]
+(defn- ^:private api-parser [response]
   (let [json-response (json/read-str response)
         latest-story (get-in json-response ["list" "story" 0])
         story-url (get-in latest-story ["audio" 0 "format" "mp3" 0 "$text"])
