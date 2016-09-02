@@ -77,7 +77,6 @@
    (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source "http://radioopensource.org/feed/" (override-title "Open Source"))
    (xml-resource :radiolab "http://feeds.wnyc.org/radiolab")
-   (xml-resource :radiotonic "http://www.abc.net.au/radionational/feed/5421356/podcast.xml" (override-title "Radiotonic"))
    (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
