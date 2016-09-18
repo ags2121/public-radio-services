@@ -80,7 +80,7 @@
    (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
-   (xml-resource :ideas "http://www.cbc.ca/podcasting/includes/ideas.xml" (override-title "Ideas"))
+   (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml" (override-title "The Guardian's Long Reads"))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
