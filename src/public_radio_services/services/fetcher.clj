@@ -4,7 +4,8 @@
             [clojure.data.json :as json]
             [environ.core :refer [env]]
             [clojure.data.xml :as xml]
-            [clojure.data.xml.name :as name]))
+            [clojure.data.xml.name :as name]
+            [clojure.string :as str]))
 
 (def NPR-API-KEY (env :npr-api-key))
 (def NPR-ENDPOINT (str "https://api.npr.org/query?id=500005&profileTypeId=15"
@@ -62,6 +63,9 @@
 (defn override-title [title]
   #(assoc % :showTitle title))
 
+(defn update-attribute [attr func]
+  #(update-in % [attr] func))
+
 (def ^:private NEWSCAST-ENDPOINTS
   [(api-resource :npr NPR-ENDPOINT)
    (xml-resource :pri "http://www.pri.org/programs/3704/episodes/feed")
@@ -80,7 +84,10 @@
    (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
-   (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml" (override-title "The Guardian's Long Reads"))
+   (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
+                 (comp
+                   (override-title "The Guardian's Long Reads")
+                   (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
@@ -89,8 +96,7 @@
    (xml-resource :snapjudgement "http://feeds.wnyc.org/snapjudgment-wnyc")
    (xml-resource :worldinwords "http://feeds.feedburner.com/pri/world-words")
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
-                 (fn [m]
-                   (update-in m [:episodeTitle] #(clojure.string/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" ""))))
+                 (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
    ])
 
@@ -100,6 +106,7 @@
                               {name (-> (:body %)
                                         parser
                                         (assoc :rssUrl url)
+                                        (update-in [:episodeTitle] (fn [epTitle] (str/trim epTitle)))
                                         post-processing-fn)})))
     c))
 
