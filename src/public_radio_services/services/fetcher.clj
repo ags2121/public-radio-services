@@ -80,13 +80,14 @@
    (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
    (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source "http://radioopensource.org/feed/" (override-title "Open Source"))
-   (xml-resource :radiolab "http://feeds.wnyc.org/radiolab")
+   (xml-resource :radiolab "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
    (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
    (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
                  (comp
-                   (override-title "The Guardian's Long Reads")
+                   (override-title "Long Reads")
+                   (update-attribute :episodeTitle str/trim)
                    (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
@@ -106,7 +107,6 @@
                               {name (-> (:body %)
                                         parser
                                         (assoc :rssUrl url)
-                                        (update-in [:episodeTitle] (fn [epTitle] (str/trim epTitle)))
                                         post-processing-fn)})))
     c))
 
