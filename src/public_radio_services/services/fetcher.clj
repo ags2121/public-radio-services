@@ -13,31 +13,37 @@
                        "&output=JSON&numResults=1&fields=storyDate,audio"))
 
 (defn- ^:private get-xml-node [parent-node tag]
-  (->> parent-node
-       :content
-       (filter #(= (:tag %) tag))
-       first))
+  (some->> parent-node
+           :content
+           (filter #(= (:tag %) tag))
+           first))
 
 (defn- ^:private get-xml-node-content [parent-node tag]
-  (-> (get-xml-node parent-node tag) :content first))
+  (some-> (get-xml-node parent-node tag) :content first))
 
 (defn- ^:private get-xml-node-attribute [parent-node tag attr]
-  (-> (get-xml-node parent-node tag) :attrs attr))
+  (some-> (get-xml-node parent-node tag) :attrs attr))
 
 (defn- ^:private xml-parser [text]
-  (let [parsed-xml (xml-seq (xml/parse-str text))
+  (let [parsed-xml
+        (try
+          (xml-seq (xml/parse-str text))
+          (catch Exception e
+            (do
+              (print (str "Exception: " (.getMessage e) "Unable to parse: " text))
+              nil)))
         showTitle (->> parsed-xml
                        (filter #(= (:tag %) :title))
                        first :content first)
         genre (some->> parsed-xml
                        (filter #(= (:tag %) (name/canonical-name "http://www.itunes.com/dtds/podcast-1.0.dtd" "category" "itunes")))
                        first :attrs first val)
-        showUrl (->> parsed-xml
-                     (filter #(= (:tag %) :link))
-                     first :content first)
-        first-item (->> parsed-xml
-                        (filter #(= (:tag %) :item))
-                        first)
+        showUrl (some->> parsed-xml
+                         (filter #(= (:tag %) :link))
+                         first :content first)
+        first-item (some->> parsed-xml
+                            (filter #(= (:tag %) :item))
+                            first)
         episodeTitle (get-xml-node-content first-item :title)
         pubDate (get-xml-node-content first-item :pubDate)
         url (get-xml-node-attribute first-item :enclosure :url)]
@@ -104,10 +110,10 @@
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
   (let [c (chan)]
     (httpkit/get url #(go (>! c
-                              {name (-> (:body %)
-                                        parser
-                                        (assoc :rssUrl url)
-                                        post-processing-fn)})))
+                              {name (some-> (:body %)
+                                            parser
+                                            (assoc :rssUrl url)
+                                            post-processing-fn)})))
     c))
 
 (defn ^:private get-resources [endpoints]
