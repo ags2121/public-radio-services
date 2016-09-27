@@ -25,13 +25,12 @@
   (some-> (get-xml-node parent-node tag) :attrs attr))
 
 (defn- ^:private xml-parser [text]
-  (let [parsed-xml
-        (try
-          (xml-seq (xml/parse-str text))
-          (catch Exception e
-            (do
-              (print (str "Exception: " (.getMessage e) "Unable to parse: " text))
-              nil)))
+  (let [parsed-xml (try
+                     (xml-seq (xml/parse-str text))
+                     (catch Exception e
+                       (do
+                         (print (str "Exception: " (.getMessage e) "Unable to parse: " text))
+                         nil)))
         showTitle (->> parsed-xml
                        (filter #(= (:tag %) :title))
                        first :content first)
@@ -42,7 +41,10 @@
                          (filter #(= (:tag %) :link))
                          first :content first)
         first-item (some->> parsed-xml
-                            (filter #(= (:tag %) :item))
+                            (filter
+                              (fn [x] (->> x
+                                           :content
+                                           (some #(= (:tag %) :enclosure)))))
                             first)
         episodeTitle (get-xml-node-content first-item :title)
         pubDate (get-xml-node-content first-item :pubDate)
