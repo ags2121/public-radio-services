@@ -96,7 +96,7 @@
                  (comp
                    (override-title "Long Reads")
                    (update-attribute :episodeTitle str/trim)
-                   (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
+                   (update-attribute :episodeTitle #(str/replace % "- podcast" ""))))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
