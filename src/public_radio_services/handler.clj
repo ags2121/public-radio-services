@@ -6,7 +6,8 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [ring.util.response :refer [get-header header]]
+            [ring.middleware.session :refer [wrap-session]]
+            [ring.util.response :refer [get-header header redirect response]]
             [public-radio-services.services.visitor-count :as vc]
             [public-radio-services.services.fetcher :as news]
             [public-radio-services.services.requests :as requests]
@@ -14,13 +15,45 @@
             [ring.adapter.jetty :as jetty]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
-            [clojure.string :only [blank?] :as string]
-            [public-radio-services.services.db :as db]))
+            [public-radio-services.services.db :as db]
+            [hiccup.core :as h]
+            [clojure.string :as string]))
+
+;; -- VIEWS ----------------------------------------------------------
+;;
+;;
+;;
+(defn login-form
+  ([]
+   (login-form "TRY"))
+  ([banner]
+   (h/html
+     [:div
+      [:div.banner banner]
+      [:form {:action "/login" :method "post"}
+       [:input {:name "password" :type "password"}]
+       [:button "Submit"]]])))
+
+(def requests
+  (h/html
+    [:ul
+     (for [req (requests/get-requests)]
+       [:li {:style "margin-bottom: 1em;"}
+        (for [entry req]
+          [:div
+           [:span {:style "margin-right: 1em; color: darkgrey;"} (key entry)]
+           [:span (val entry)]])
+        ])]))
+
+;; -- ROUTES ----------------------------------------------------------
+;;
+;;
+;;
 
 (declare post-request)
 (declare get-requests)
 
-(defroutes routes
+(defroutes public-routes
            (GET "/newscasts" []
              {:body {:newscasts (news/get-newscasts)}})
 
@@ -28,7 +61,6 @@
              {:body {:podcasts (news/get-podcasts)}})
 
            (POST "/requests" [] post-request)
-           (GET "/requests" [] (requests/get-requests))
 
            (ANY "/visitor-count" {cookies :cookies request-method :request-method}
              (case request-method
@@ -42,6 +74,25 @@
 
            (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
 
+(defn do-login
+  "Check the submitted form data and update the session if necessary"
+  [params session]
+  (if (db/is-admin? (get params "password"))
+    (assoc session :user "admin")
+    session))
+
+(defroutes secured-routes
+           (POST "/login" {{referer "referer"} :headers params :form-params session :session}
+             (let [session (do-login params session)
+                   redirect-url (if referer
+                                  (as-> referer $ (string/split $ #"/") (last $) (str "/" $))
+                                  "/requests")]
+               (merge (redirect redirect-url) (if (:user session) {:session session}))))
+
+           (GET "/requests" {session :session}
+             (if (:user session)
+               requests
+               (login-form))))
 
 (defresource post-request
              :allowed-methods [:post]
@@ -63,18 +114,23 @@
              :handle-created
              (fn [ctx] {::id (::request-id ctx)}))
 
+(defroutes app-routes
+           (-> secured-routes
+               wrap-session)
+           (-> public-routes
+               wrap-json-response))
+
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
     (let [response (handler request)]
       (assoc-in response [:headers "Access-Control-Allow-Credentials"] "true"))))
 
-(def app (-> routes
+(def app (-> app-routes
              (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://www.publicradio.info"]
                         :access-control-allow-methods [:get :post])
-             wrap-allow-cors-credentials
              wrap-cookies
              wrap-params
-             wrap-json-response))
+             wrap-allow-cors-credentials))
 
 (defn -main [& [port]]
   (db/migrate)

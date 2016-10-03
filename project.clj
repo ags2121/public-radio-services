@@ -23,6 +23,9 @@
                  [org.clojure/java.jdbc "0.3.6"]
                  [clojure.jdbc/clojure.jdbc-c3p0 "0.3.1"]
                  [postgresql/postgresql "9.1-901-1.jdbc4"]
+                 [hiccup "1.0.5"]
+                 [buddy/buddy-auth "1.2.0"]
+                 [buddy/buddy-hashers "1.0.0"]
                  ]
   ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
   ;                                 :username :env/datomic_username
