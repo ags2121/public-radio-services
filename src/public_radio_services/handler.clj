@@ -45,14 +45,42 @@
            [:span (val entry)]])
         ])]))
 
+;; -- HELPERS ----------------------------------------------------------
+;;
+;;
+;;
+(defn do-login
+  "Check the submitted form data and update the session if necessary"
+  [params session]
+  (if (db/is-admin? (get params "password"))
+    (assoc session :user "admin")
+    session))
+
+(declare post-request)
+(defresource post-request
+             :allowed-methods [:post]
+             :available-media-types ["application/json"]
+             :processable?
+             (fn [ctx]
+               (let [params (get-in ctx [:request :params])
+                     errors (requests/validate-request params)]
+                 (if (empty? errors)
+                   true
+                   [false (assoc ctx ::errors errors)])))
+             :handle-unprocessable-entity
+             (fn [ctx] {::errors (::errors ctx)})           ; clojure keywords are functions and liberator passes each handler the context
+             :post!
+             (fn [ctx]
+               (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
+                     request-id (:id saved-request)]
+                 {::request-id (str request-id)}))
+             :handle-created
+             (fn [ctx] {::id (::request-id ctx)}))
+
 ;; -- ROUTES ----------------------------------------------------------
 ;;
 ;;
 ;;
-
-(declare post-request)
-(declare get-requests)
-
 (defroutes public-routes
            (GET "/newscasts" []
              {:body {:newscasts (news/get-newscasts)}})
@@ -74,49 +102,18 @@
 
            (route/not-found {:body {:suhdude "https://vine.co/v/izX5WhPqIvi"}}))
 
-(defn do-login
-  "Check the submitted form data and update the session if necessary"
-  [params session]
-  (if (db/is-admin? (get params "password"))
-    (assoc session :user "admin")
-    session))
-
 (defroutes secured-routes
            (POST "/login" {{referer "referer"} :headers params :form-params session :session}
-             (.println System/out "START")
              (let [session (do-login params session)
                    redirect-url (if referer
                                   (as-> referer $ (string/split $ #"/") (last $) (str "/" $))
                                   "/requests")]
-               (.println System/out redirect-url)
-               (.println System/out session)
                (assoc (redirect redirect-url) :session session)))
 
            (GET "/requests" {session :session}
-             (.println System/out "REQUESTS")
              (if (:user session)
                requests
                (login-form))))
-
-(defresource post-request
-             :allowed-methods [:post]
-             :available-media-types ["application/json"]
-             :processable?
-             (fn [ctx]
-               (let [params (get-in ctx [:request :params])
-                     errors (requests/validate-request params)]
-                 (if (empty? errors)
-                   true
-                   [false (assoc ctx ::errors errors)])))
-             :handle-unprocessable-entity
-             (fn [ctx] {::errors (::errors ctx)})           ; clojure keywords are functions and liberator passes each handler the context
-             :post!
-             (fn [ctx]
-               (let [saved-request (requests/save-request! (get-in ctx [:request :params]))
-                     request-id (:id saved-request)]
-                 {::request-id (str request-id)}))
-             :handle-created
-             (fn [ctx] {::id (::request-id ctx)}))
 
 (defroutes app-routes
            (-> secured-routes
@@ -124,6 +121,10 @@
            (-> public-routes
                wrap-json-response))
 
+;; -- CUSTOM MIDDLEWARE ----------------------------------------------------------
+;;
+;;
+;;
 (defn wrap-allow-cors-credentials [handler]
   (fn [request]
     (let [response (handler request)]
