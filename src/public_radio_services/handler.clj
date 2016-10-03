@@ -83,13 +83,13 @@
 
 (defroutes secured-routes
            (POST "/login" {{referer "referer"} :headers params :form-params session :session}
-             (println "START")
+             (.println System/out "START")
              (let [session (do-login params session)
                    redirect-url (if referer
                                   (as-> referer $ (string/split $ #"/") (last $) (str "/" $))
                                   "/requests")]
-               (println redirect-url)
-               (println session)
+               (.println System/out redirect-url)
+               (.println System/out session)
                (assoc (redirect redirect-url) :session session)))
 
            (GET "/requests" {session :session}
