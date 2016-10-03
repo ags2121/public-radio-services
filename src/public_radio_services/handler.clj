@@ -93,6 +93,7 @@
                (assoc (redirect redirect-url) :session session)))
 
            (GET "/requests" {session :session}
+             (.println System/out "REQUESTS")
              (if (:user session)
                requests
                (login-form))))
