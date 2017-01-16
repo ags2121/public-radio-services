@@ -71,6 +71,12 @@
 (defn override-title [title]
   #(assoc % :showTitle title))
 
+(defn capitalize-words [string]
+  (as-> string show-title
+        (clojure.string/split show-title #" ")
+        (map clojure.string/capitalize show-title)
+        (clojure.string/join " " show-title)))
+
 (defn update-attribute [attr func]
   #(update-in % [attr] func))
 
@@ -96,7 +102,7 @@
                  (comp
                    (override-title "Long Reads")
                    (update-attribute :episodeTitle str/trim)
-                   (update-attribute :episodeTitle #(str/replace % "- podcast" ""))))
+                   (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
    (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
    (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
@@ -107,6 +113,15 @@
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
+   (xml-resource :grey-wolf-feed "https://www.patreon.com/rss/chapotraphouse?auth=345079aa8b595739197b95ad869fac8d")
+   (xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
+   (xml-resource :mouth-time "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
+   (xml-resource :resident-advisor "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
+   (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
+   (xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
+   (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
+   (xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts")
+   (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
