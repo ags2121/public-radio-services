@@ -113,7 +113,7 @@
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
-   (xml-resource :grey-wolf-feed "https://www.patreon.com/rss/chapotraphouse?auth=345079aa8b595739197b95ad869fac8d")
+   ;(xml-resource :grey-wolf-feed "https://www.patreon.com/rss/chapotraphouse?auth=345079aa8b595739197b95ad869fac8d")
    (xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
    (xml-resource :mouth-time "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
    (xml-resource :resident-advisor "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
