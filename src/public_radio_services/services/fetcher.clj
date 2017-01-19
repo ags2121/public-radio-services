@@ -120,12 +120,16 @@
    (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
    (xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
    (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
-   (xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts")
+   (xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
    (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
    (xml-resource :pro-publica "http://feeds.propublica.org/propublica/podcast"
                  (comp
                    (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
                    (override-title "ProPublica")))
+   (xml-resource :intercept "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
+   (xml-resource :between-the-ears "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
+   (xml-resource :the-essay "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
+   (xml-resource :fishko-files "http://feeds.wnyc.org/fishko")
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
@@ -147,8 +151,14 @@
         res
         (recur @results)))))
 
+(def cache (atom {:newscasts nil :podcasts nil}))
+
 (defn get-newscasts []
-  (get-resources NEWSCAST-ENDPOINTS))
+  (or (:newscasts @cache) (get-resources NEWSCAST-ENDPOINTS)))
 
 (defn get-podcasts []
-  (get-resources PODCAST-ENDPOINTS))
+  (or (:podcasts @cache) (get-resources PODCAST-ENDPOINTS)))
+
+(defn add-to-cache []
+  (swap! cache assoc :newscasts (get-newscasts))
+  (swap! cache assoc :podcasts (get-newscasts)))

@@ -9,7 +9,7 @@
             [ring.middleware.session :refer [wrap-session]]
             [ring.util.response :refer [get-header header redirect response]]
             [public-radio-services.services.visitor-count :as vc]
-            [public-radio-services.services.fetcher :as news]
+            [public-radio-services.services.fetcher :as f]
             [public-radio-services.services.requests :as requests]
             [public-radio-services.scheduler :as scheduler]
             [ring.adapter.jetty :as jetty]
@@ -84,10 +84,10 @@
 ;;
 (defroutes public-routes
            (GET "/newscasts" []
-             {:body {:newscasts (news/get-newscasts)}})
+             {:body {:newscasts (f/get-newscasts)}})
 
            (GET "/podcasts" []
-             {:body {:podcasts (news/get-podcasts)}})
+             {:body {:podcasts (f/get-podcasts)}})
 
            (POST "/requests" [] post-request)
 
@@ -142,4 +142,5 @@
   (db/migrate)
   (let [port (Integer. ^int (or port (env :port) 5000))]
     (jetty/run-jetty #'app {:port port :join? false})
-    (scheduler/poll-server)))
+    (f/add-to-cache)
+    (scheduler/pre-cache-scheduler)))
