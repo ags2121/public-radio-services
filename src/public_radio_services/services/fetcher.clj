@@ -130,6 +130,7 @@
    (xml-resource :between-the-ears "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
    (xml-resource :the-essay "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
    (xml-resource :fishko-files "http://feeds.wnyc.org/fishko")
+   (xml-resource :bird-note "http://feeds.feedburner.com/birdnote/OYfP")
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
