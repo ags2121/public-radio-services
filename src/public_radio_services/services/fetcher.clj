@@ -122,6 +122,10 @@
    (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
    (xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts")
    (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
+   (xml-resource :pro-publica "http://feeds.propublica.org/propublica/podcast"
+                 (comp
+                   (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
+                   (override-title "ProPublica")))
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
