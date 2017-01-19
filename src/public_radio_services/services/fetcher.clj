@@ -161,4 +161,4 @@
 
 (defn add-to-cache []
   (swap! cache assoc :newscasts (get-newscasts))
-  (swap! cache assoc :podcasts (get-newscasts)))
+  (swap! cache assoc :podcasts (get-podcasts)))
