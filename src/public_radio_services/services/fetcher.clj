@@ -129,7 +129,7 @@
    (xml-resource :intercept "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
    (xml-resource :between-the-ears "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
    (xml-resource :the-essay "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
-   (xml-resource :fishko-files "http://feeds.wnyc.org/fishko")
+   (xml-resource :fishko-files "http://feeds.wnyc.org/fishko" (override-title "Fishko Files"))
    (xml-resource :bird-note "http://feeds.feedburner.com/birdnote/OYfP")
    ])
 
