@@ -120,7 +120,7 @@
    (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
    (xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
    (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
-   (xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
+   ;(xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
    (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
    (xml-resource :pro-publica "http://feeds.propublica.org/propublica/podcast"
                  (comp
