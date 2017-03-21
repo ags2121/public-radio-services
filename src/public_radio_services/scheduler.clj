@@ -14,4 +14,4 @@
 
 ;; every minute add the pods and news to cache
 (defn pre-cache-scheduler []
-  (every 60000 f/add-to-cache my-pool))
+  (every 30000 f/add-to-cache my-pool))

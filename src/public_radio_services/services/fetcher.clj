@@ -162,4 +162,6 @@
 
 (defn add-to-cache []
   (swap! cache assoc :newscasts (get-newscasts))
-  (swap! cache assoc :podcasts (get-podcasts)))
+  (swap! cache assoc :podcasts (get-podcasts))
+  (println "add to cache")
+  (println @cache))
