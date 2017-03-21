@@ -161,7 +161,5 @@
   (or (:podcasts @cache) (get-resources PODCAST-ENDPOINTS)))
 
 (defn add-to-cache []
-  (swap! cache assoc :newscasts (get-newscasts))
-  (swap! cache assoc :podcasts (get-podcasts))
-  (println "add to cache")
-  (println @cache))
+  (swap! cache assoc :newscasts (get-resources NEWSCAST-ENDPOINTS))
+  (swap! cache assoc :podcasts (get-resources PODCAST-ENDPOINTS)))
