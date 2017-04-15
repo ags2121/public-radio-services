@@ -31,9 +31,9 @@
                        (do
                          (print (str "Exception: " (.getMessage e) "Unable to parse: " text))
                          nil)))
-        showTitle (->> parsed-xml
-                       (filter #(= (:tag %) :title))
-                       first :content first)
+        showTitle (some->> parsed-xml
+                           (filter #(= (:tag %) :title))
+                           first :content first)
         genre (some->> parsed-xml
                        (filter #(= (:tag %) (name/canonical-name "http://www.itunes.com/dtds/podcast-1.0.dtd" "category" "itunes")))
                        first :attrs first val)
@@ -103,8 +103,8 @@
                    (override-title "Long Reads")
                    (update-attribute :episodeTitle str/trim)
                    (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
-   (xml-resource :unfictional "http://feeds.kcrw.com/kcrw/uf" (override-title "UnFictional"))
-   (xml-resource :organist "http://feeds.kcrw.com/kcrw/to" (override-title "The Organist"))
+   (xml-resource :unfictional "https://www.kcrw.com/news-culture/shows/unfictional/rss.xml" (override-title "UnFictional"))
+   (xml-resource :organist "https://www.kcrw.com/news-culture/shows/the-organist/rss.xml" (override-title "The Organist"))
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
    (xml-resource :seriously "http://www.bbc.co.uk/programmes/p02pc9qx/episodes/downloads.rss")
    (xml-resource :bodegaboys "http://feeds.soundcloud.com/users/soundcloud:users:169774121/sounds.rss")
