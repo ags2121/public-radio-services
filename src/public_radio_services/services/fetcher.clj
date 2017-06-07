@@ -84,9 +84,7 @@
   [(api-resource :npr NPR-ENDPOINT)
    (xml-resource :pri "http://www.pri.org/programs/3704/episodes/feed")
    (xml-resource :bbc-global "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
-   (xml-resource :marketplace "http://feeds.publicradio.org/public_feeds/marketplace-pm/rss/rss")
    (xml-resource :democracynow "http://www.democracynow.org/podcast.xml")
-   (xml-resource :pbs "http://feeds.feedburner.com/NewshourFullProgramPodcast?format=xml")
    (xml-resource :bbc-africa "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")])
 
 (def ^:private PODCAST-ENDPOINTS
