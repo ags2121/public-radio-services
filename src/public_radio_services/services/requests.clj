@@ -2,14 +2,14 @@
   (:require [public-radio-services.services.db :as db]
             [environ.core :refer [env]]
             [clojure.string :only [blank?] :as string]
-            [org.httpkit.client :only [head] :as httpkit])
+            [clj-http.client :as client])
   (:import (java.util Date TimeZone)))
 
 (defn ^:private is-valid-url [url]
   (let [url (if (nil? (re-matches #"^(https?)://.*$" url))
               (str "http://" url)
               url)]
-    (nil? (:error @(httpkit/head url)))))
+    (nil? (:error (client/head url)))))
 
 (defn validate-request [{name "name" url "url"}]
   (let [errors {}

@@ -1,11 +1,11 @@
 (ns public-radio-services.services.fetcher
-  (:require [org.httpkit.client :as httpkit]
-            [clojure.core.async :refer [chan go >! <!]]
+  (:require [clojure.core.async :refer [chan go >! <!]]
             [clojure.data.json :as json]
             [environ.core :refer [env]]
             [clojure.data.xml :as xml]
             [clojure.data.xml.name :as name]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clj-http.client :as client]))
 
 (def NPR-API-KEY (env :npr-api-key))
 (def NPR-ENDPOINT (str "https://api.npr.org/query?id=500005&profileTypeId=15"
@@ -88,14 +88,17 @@
    (xml-resource :bbc-africa "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")])
 
 (def ^:private PODCAST-ENDPOINTS
-  [(xml-resource :reveal "http://feeds.revealradio.org/revealpodcast.xml")
+  [
+   ;(xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
+   ;(xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
+   (xml-resource :london-review "https://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
+   (xml-resource :rumble "https://www.rumblestripvermont.com/feed/")
+   (xml-resource :reveal "http://feeds.revealradio.org/revealpodcast.xml")
    (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
    (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source "http://radioopensource.org/feed/" (override-title "Open Source"))
    (xml-resource :radiolab "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
-   (xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
-   (xml-resource :rumble "http://www.rumblestripvermont.com/feed/")
    (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
                  (comp
                    (override-title "Long Reads")
@@ -106,19 +109,16 @@
    (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
    (xml-resource :seriously "http://www.bbc.co.uk/programmes/p02pc9qx/episodes/downloads.rss")
    (xml-resource :bodegaboys "http://feeds.soundcloud.com/users/soundcloud:users:169774121/sounds.rss")
+   (xml-resource :mouth-time "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
    (xml-resource :snapjudgement "http://feeds.wnyc.org/snapjudgment-wnyc")
    (xml-resource :worldinwords "http://feeds.feedburner.com/pri/world-words")
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
-   ;(xml-resource :grey-wolf-feed "https://www.patreon.com/rss/chapotraphouse?auth=345079aa8b595739197b95ad869fac8d")
    (xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
-   (xml-resource :mouth-time "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
    (xml-resource :resident-advisor "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
    (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
-   (xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
    (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
-   ;(xml-resource :london-review "http://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
    (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
    (xml-resource :pro-publica "http://feeds.propublica.org/propublica/podcast"
                  (comp
@@ -129,15 +129,20 @@
    (xml-resource :the-essay "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
    (xml-resource :fishko-files "http://feeds.wnyc.org/fishko" (override-title "Fishko Files"))
    (xml-resource :bird-note "http://feeds.feedburner.com/birdnote/OYfP")
+   (xml-resource :dead-pundits "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
   (let [c (chan)]
-    (httpkit/get url #(go (>! c
-                              {name (some-> (:body %)
-                                            parser
-                                            (assoc :rssUrl url)
-                                            post-processing-fn)})))
+    (client/get
+      url
+      {:async? true}
+      #(go (>! c
+               {name (some-> (:body %)
+                             parser
+                             (assoc :rssUrl url)
+                             post-processing-fn)}))
+      (fn [exception] (println "exception message is: " (.getMessage exception))))
     c))
 
 (defn ^:private get-resources [endpoints]

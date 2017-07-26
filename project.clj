@@ -14,7 +14,6 @@
                  [compojure "1.4.0"]
                  [clj-time "0.11.0"]
                  [ring/ring-json "0.4.0"]
-                 [http-kit "2.1.18"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.0.1"]
@@ -26,6 +25,7 @@
                  [hiccup "1.0.5"]
                  [buddy/buddy-auth "1.2.0"]
                  [buddy/buddy-hashers "1.0.0"]
+                 [clj-http "3.6.1"]
                  ]
   ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
   ;                                 :username :env/datomic_username

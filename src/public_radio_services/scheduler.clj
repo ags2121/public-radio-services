@@ -1,12 +1,16 @@
 (ns public-radio-services.scheduler
   (:require [overtone.at-at :refer :all]
-            [org.httpkit.client :as httpkit]
+            [clj-http.client :as client]
             [public-radio-services.services.fetcher :as f]))
 
 (def my-pool (mk-pool))
 
 (defn get-requests []
-  (httpkit/get "http://www.publicradioservices.info/visitor-count" (fn [_] (println "server polled"))))
+  (client/get
+    "http://www.publicradioservices.info/visitor-count"
+    {:async? true}
+    (fn [_] (println "server polled"))
+    (fn [exception] (println "exception message is: " (.getMessage exception)))))
 
 ;; every half hour poll the server
 (defn poll-server []
