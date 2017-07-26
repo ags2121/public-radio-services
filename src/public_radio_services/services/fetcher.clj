@@ -130,6 +130,7 @@
    (xml-resource :fishko-files "http://feeds.wnyc.org/fishko" (override-title "Fishko Files"))
    (xml-resource :bird-note "http://feeds.feedburner.com/birdnote/OYfP")
    (xml-resource :dead-pundits "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
+   (xml-resource :upstream "http://feeds.soundcloud.com/users/soundcloud:users:200783566/sounds.rss")
    ])
 
 (defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
