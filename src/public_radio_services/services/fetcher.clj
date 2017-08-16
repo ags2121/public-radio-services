@@ -5,12 +5,24 @@
             [clojure.data.xml :as xml]
             [clojure.data.xml.name :as name]
             [clojure.string :as str]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [net.cgrand.enlive-html :as html]))
 
 (def NPR-API-KEY (env :npr-api-key))
 (def NPR-ENDPOINT (str "https://api.npr.org/query?id=500005&profileTypeId=15"
                        "&apiKey=" NPR-API-KEY
                        "&output=JSON&numResults=1&fields=storyDate,audio"))
+
+; "https://tunein.com/radio/BBC-News-Summary-p193595/"
+; https://opml.radiotime.com/Tune.ashx?&id=t115905024&render=json&formats=mp3,aac,ogg,flash,html&version=2&itemUrlScheme=secure
+(defn- ^:private bbc-parser [url]
+  (let [data-id-full (-> (html/html-resource (java.net.URL. url))
+                         (html/select [:div#container-0 :div.col-xs-12])
+                         first
+                         :attrs
+                         :data-id)
+        data-id (second (re-find #"status-(t[0-9]+)" data-id-full))]
+    data-id))
 
 (defn- ^:private get-xml-node [parent-node tag]
   (some->> parent-node
