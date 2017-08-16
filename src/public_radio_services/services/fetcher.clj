@@ -6,23 +6,13 @@
             [clojure.data.xml.name :as name]
             [clojure.string :as str]
             [clj-http.client :as client]
-            [net.cgrand.enlive-html :as html]))
+            [net.cgrand.enlive-html :as html]
+            [clojure.java.io :as io]))
 
 (def NPR-API-KEY (env :npr-api-key))
 (def NPR-ENDPOINT (str "https://api.npr.org/query?id=500005&profileTypeId=15"
                        "&apiKey=" NPR-API-KEY
                        "&output=JSON&numResults=1&fields=storyDate,audio"))
-
-; "https://tunein.com/radio/BBC-News-Summary-p193595/"
-; https://opml.radiotime.com/Tune.ashx?&id=t115905024&render=json&formats=mp3,aac,ogg,flash,html&version=2&itemUrlScheme=secure
-(defn- ^:private bbc-parser [url]
-  (let [data-id-full (-> (html/html-resource (java.net.URL. url))
-                         (html/select [:div#container-0 :div.col-xs-12])
-                         first
-                         :attrs
-                         :data-id)
-        data-id (second (re-find #"status-(t[0-9]+)" data-id-full))]
-    data-id))
 
 (defn- ^:private get-xml-node [parent-node tag]
   (some->> parent-node
@@ -71,6 +61,20 @@
         story-date (get-in latest-story ["storyDate" "$text"])]
     {:url story-url :pubDate story-date}))
 
+(defn- ^:private bbc-news-summary-parser [body]
+  (let [data-id-full (-> (html/html-resource (io/input-stream (.getBytes body)))
+                         (html/select [:div#container-0 :div.col-xs-12])
+                         first
+                         :attrs
+                         :data-id)
+        data-id (second (re-find #"status-(t[0-9]+)" data-id-full))
+        url (-> (client/get (str "https://opml.radiotime.com/Tune.ashx?&id=" data-id "&render=json&formats=mp3,aac,ogg,flash,html&version=2&itemUrlScheme=secure") {:as :json})
+                :body
+                :body
+                first
+                :url)]
+    {:url url}))
+
 (defrecord Resource [name url parser post-processing-fn])
 
 (defn xml-resource
@@ -79,6 +83,9 @@
 
 (defn api-resource [name url]
   (->Resource name url api-parser identity))
+
+(defn bbc-news-summary-resource [name url]
+  (->Resource name url bbc-news-summary-parser identity))
 
 (defn override-title [title]
   #(assoc % :showTitle title))
@@ -97,7 +104,8 @@
    (xml-resource :pri "http://www.pri.org/programs/3704/episodes/feed")
    (xml-resource :bbc-global "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
    (xml-resource :democracynow "http://www.democracynow.org/podcast.xml")
-   (xml-resource :bbc-africa "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")])
+   (xml-resource :bbc-africa "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")
+   (bbc-news-summary-resource :bbc-headlines "https://tunein.com/radio/BBC-News-Summary-p193595/")])
 
 (def ^:private PODCAST-ENDPOINTS
   [
