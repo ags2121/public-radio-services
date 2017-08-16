@@ -28,6 +28,7 @@
                  [clj-http "3.6.1"]
                  [enlive "1.1.6"]
                  ]
+  :main public-radio-services.handler
   ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
   ;                                 :username :env/datomic_username
   ;                                 :password :env/datomic_password}}
