@@ -194,7 +194,7 @@
     (do
       (swap! cache merge data)
       (swap! position + STEP)
-      (println "cache refreshed"))))
+      (println "cache refreshed with: " (keys data)))))
 
 (defn get-data-of-type [type]
   (select-keys @cache (for [[k v] @cache :when (= type (-> v :type))] k)))
