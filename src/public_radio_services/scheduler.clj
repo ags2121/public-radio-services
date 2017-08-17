@@ -3,7 +3,7 @@
             [clj-http.client :as client]
             [public-radio-services.services.fetcher :as f]))
 
-(def my-pool (mk-pool :cpu-count 8))
+(def my-pool (mk-pool))
 
 (defn get-requests []
   (client/get
@@ -18,4 +18,4 @@
 
 ;; every 30 seconds add the pods and news to cache
 (defn pre-cache-scheduler []
-  (interspaced 30000 f/add-to-cache my-pool))
+  (interspaced 60000 f/add-to-cache my-pool))
