@@ -62,12 +62,19 @@
     {:url story-url :pubDate story-date}))
 
 (defn- ^:private bbc-news-summary-parser [body]
-  (let [data-id-full (-> (html/html-resource (io/input-stream (.getBytes body)))
-                         (html/select [:div#container-0 :div.col-xs-12])
-                         first
-                         :attrs
-                         :data-id)
-        data-id (second (re-find #"status-(t[0-9]+)" data-id-full))
+  (let [data (json/read-str (second (re-find #"window.INITIAL_STATE=(.+);"
+                                   (-> (html/html-resource (io/input-stream (.getBytes body)))
+                                       (html/select [:head :script])
+                                       second
+                                       :content
+                                       first))))
+        data-id (-> data
+                    (get "profiles")
+                    first
+                    val
+                    (get "actions")
+                    (get "play")
+                    (get "guideId"))
         url (-> (client/get (str "https://opml.radiotime.com/Tune.ashx?&id=" data-id "&render=json&formats=mp3,aac,ogg,flash,html&version=2&itemUrlScheme=secure") {:as :json})
                 :body
                 :body
@@ -89,12 +96,6 @@
 
 (defn override-title [title]
   #(assoc % :showTitle title))
-
-(defn capitalize-words [string]
-  (as-> string show-title
-        (clojure.string/split show-title #" ")
-        (map clojure.string/capitalize show-title)
-        (clojure.string/join " " show-title)))
 
 (defn update-attribute [attr func]
   #(update-in % [attr] func))
