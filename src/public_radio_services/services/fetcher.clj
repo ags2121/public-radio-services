@@ -187,5 +187,6 @@
 (defn add-to-cache []
   (let [newscasts (get-resources NEWSCAST-ENDPOINTS)
         podcasts (get-resources PODCAST-ENDPOINTS)]
-    (swap! cache assoc :newscasts newscasts :podcasts podcasts)
-    (println "cache refreshed")))
+    (do
+      (swap! cache assoc :newscasts newscasts :podcasts podcasts)
+      (println "cache refreshed"))))
