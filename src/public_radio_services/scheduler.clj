@@ -16,6 +16,6 @@
 (defn poll-server []
   (every 1800000 get-requests my-pool))
 
-;; every 30 seconds add the pods and news to cache
+;; every 60 seconds add the pods and news to cache
 (defn pre-cache-scheduler []
-  (every 30000 f/add-to-cache my-pool))
+  (every 60000 f/add-to-cache my-pool))
