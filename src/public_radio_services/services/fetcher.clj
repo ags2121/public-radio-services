@@ -135,7 +135,7 @@
    (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
-   (xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
+   ;(xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
    (xml-resource :resident-advisor "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
    (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
    (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
