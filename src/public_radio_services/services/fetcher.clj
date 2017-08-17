@@ -75,17 +75,17 @@
                 :url)]
     {:url url}))
 
-(defrecord Resource [name url parser post-processing-fn])
+(defrecord Resource [name type url parser post-processing-fn])
 
 (defn xml-resource
-  ([name url] (->Resource name url xml-parser identity))
-  ([name url post-processing-fn] (->Resource name url xml-parser post-processing-fn)))
+  ([name type url] (->Resource name type url xml-parser identity))
+  ([name type url post-processing-fn] (->Resource name type url xml-parser post-processing-fn)))
 
 (defn api-resource [name url]
-  (->Resource name url api-parser identity))
+  (->Resource name :newscast url api-parser identity))
 
 (defn bbc-news-summary-resource [name url]
-  (->Resource name url bbc-news-summary-parser identity))
+  (->Resource name :newscast url bbc-news-summary-parser identity))
 
 (defn override-title [title]
   #(assoc % :showTitle title))
@@ -99,61 +99,65 @@
 (defn update-attribute [attr func]
   #(update-in % [attr] func))
 
-(def ^:private NEWSCAST-ENDPOINTS
-  [(api-resource :npr NPR-ENDPOINT)
-   (xml-resource :pri "http://www.pri.org/programs/3704/episodes/feed")
-   (xml-resource :bbc-global "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
-   (xml-resource :democracynow "http://www.democracynow.org/podcast.xml")
-   (xml-resource :bbc-africa "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")
-   (bbc-news-summary-resource :bbc-headlines "https://tunein.com/radio/BBC-News-Summary-p193595/")])
+(def NEWSCAST-ENDPOINTS
+  [
+   (api-resource :npr NPR-ENDPOINT)
+   (bbc-news-summary-resource :bbc-headlines "https://tunein.com/radio/BBC-News-Summary-p193595/")
+   (xml-resource :pri :newscast "http://www.pri.org/programs/3704/episodes/feed")
+   (xml-resource :bbc-global :newscast "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
+   (xml-resource :democracynow :newscast "http://www.democracynow.org/podcast.xml")
+   (xml-resource :bbc-africa :newscast "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")
+   ])
 
-(def ^:private PODCAST-ENDPOINTS
+(def PODCAST-ENDPOINTS
   [
    ;(xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    ;(xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
-   (xml-resource :london-review "https://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
-   (xml-resource :rumble "https://www.rumblestripvermont.com/feed/")
-   (xml-resource :reveal "http://feeds.revealradio.org/revealpodcast.xml")
-   (xml-resource :nypl "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
-   (xml-resource :in-our-time "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
-   (xml-resource :open-source "http://radioopensource.org/feed/" (override-title "Open Source"))
-   (xml-resource :radiolab "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
-   (xml-resource :homebrave "http://feeds.feedburner.com/homebravepodcast")
-   (xml-resource :guardian "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
+   ;(xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
+   (xml-resource :london-review :podcast "https://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
+   (xml-resource :rumble :podcast "https://www.rumblestripvermont.com/feed/")
+   (xml-resource :reveal :podcast "http://feeds.revealradio.org/revealpodcast.xml")
+   (xml-resource :nypl :podcast "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
+   (xml-resource :in-our-time :podcast "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
+   (xml-resource :open-source :podcast "http://radioopensource.org/feed/" (override-title "Open Source"))
+   (xml-resource :radiolab :podcast "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
+   (xml-resource :homebrave :podcast "http://feeds.feedburner.com/homebravepodcast")
+   (xml-resource :guardian :podcast "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
                  (comp
                    (override-title "Long Reads")
                    (update-attribute :episodeTitle str/trim)
                    (update-attribute :episodeTitle #(str/replace % " – podcast" ""))))
-   (xml-resource :unfictional "https://www.kcrw.com/news-culture/shows/unfictional/rss.xml" (override-title "UnFictional"))
-   (xml-resource :organist "https://www.kcrw.com/news-culture/shows/the-organist/rss.xml" (override-title "The Organist"))
-   (xml-resource :shortcuts "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
-   (xml-resource :seriously "http://www.bbc.co.uk/programmes/p02pc9qx/episodes/downloads.rss")
-   (xml-resource :bodegaboys "http://feeds.soundcloud.com/users/soundcloud:users:169774121/sounds.rss")
-   (xml-resource :mouth-time "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
-   (xml-resource :snapjudgement "http://feeds.wnyc.org/snapjudgment-wnyc")
-   (xml-resource :worldinwords "http://feeds.feedburner.com/pri/world-words")
-   (xml-resource :chapos-traphouse "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
+   (xml-resource :unfictional :podcast "https://www.kcrw.com/news-culture/shows/unfictional/rss.xml" (override-title "UnFictional"))
+   (xml-resource :organist :podcast "https://www.kcrw.com/news-culture/shows/the-organist/rss.xml" (override-title "The Organist"))
+   (xml-resource :shortcuts :podcast "http://www.bbc.co.uk/programmes/b01mk3f8/episodes/downloads.rss")
+   (xml-resource :seriously :podcast "http://www.bbc.co.uk/programmes/p02pc9qx/episodes/downloads.rss")
+   (xml-resource :bodegaboys :podcast "http://feeds.soundcloud.com/users/soundcloud:users:169774121/sounds.rss")
+   (xml-resource :mouth-time :podcast "http://feeds.feedburner.com/MouthTimeWithReductress" (override-title "Mouth Time"))
+   (xml-resource :snapjudgement :podcast "http://feeds.wnyc.org/snapjudgment-wnyc")
+   (xml-resource :worldinwords :podcast "http://feeds.feedburner.com/pri/world-words")
+   (xml-resource :chapos-traphouse :podcast "http://feeds.soundcloud.com/users/soundcloud:users:211911700/sounds.rss"
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
-   (xml-resource :desert-island-discs "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
-   ;(xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
-   (xml-resource :resident-advisor "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
-   (xml-resource :ben-dixon-show "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
-   (xml-resource :eternal-now "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
-   (xml-resource :honky-tonk "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
-   (xml-resource :pro-publica "http://feeds.propublica.org/propublica/podcast"
+   (xml-resource :desert-island-discs :podcast "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
+   (xml-resource :resident-advisor :podcast "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
+   (xml-resource :ben-dixon-show :podcast "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
+   (xml-resource :eternal-now :podcast "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
+   (xml-resource :honky-tonk :podcast "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
+   (xml-resource :pro-publica :podcast "http://feeds.propublica.org/propublica/podcast"
                  (comp
                    (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
                    (override-title "ProPublica")))
-   (xml-resource :intercept "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
-   (xml-resource :between-the-ears "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
-   (xml-resource :the-essay "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
-   (xml-resource :fishko-files "http://feeds.wnyc.org/fishko" (override-title "Fishko Files"))
-   (xml-resource :bird-note "http://feeds.feedburner.com/birdnote/OYfP")
-   (xml-resource :dead-pundits "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
-   (xml-resource :upstream "http://feeds.soundcloud.com/users/soundcloud:users:200783566/sounds.rss")
+   (xml-resource :intercept :podcast "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
+   (xml-resource :between-the-ears :podcast "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
+   (xml-resource :the-essay :podcast "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
+   (xml-resource :fishko-files :podcast "http://feeds.wnyc.org/fishko" (override-title "Fishko Files"))
+   (xml-resource :bird-note :podcast "http://feeds.feedburner.com/birdnote/OYfP")
+   (xml-resource :dead-pundits :podcast "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
+   (xml-resource :upstream :podcast "http://feeds.soundcloud.com/users/soundcloud:users:200783566/sounds.rss")
    ])
 
-(defn ^:private get-ajax-channel [{:keys [url name parser post-processing-fn]}]
+(def ENDPOINTS (into [] (concat NEWSCAST-ENDPOINTS PODCAST-ENDPOINTS)))
+
+(defn ^:private get-ajax-channel [{:keys [url type name parser post-processing-fn]}]
   (let [c (chan)]
     (client/get
       url
@@ -161,12 +165,12 @@
       #(go (>! c
                {name (some-> (:body %)
                              parser
-                             (assoc :rssUrl url)
+                             (assoc :sourceUrl url :type type)
                              post-processing-fn)}))
       (fn [exception] (println "exception message is: " (.getMessage exception))))
     c))
 
-(defn ^:private get-resources [endpoints]
+(defn get-resources [endpoints]
   (let [channels (map get-ajax-channel endpoints)
         results (atom {})]
     (go (doseq [chan channels]
@@ -176,17 +180,27 @@
         res
         (recur @results)))))
 
-(def cache (atom {:newscasts nil :podcasts nil}))
+(def cache (atom {}))
 
-(defn get-newscasts []
-  (or (:newscasts @cache) (get-resources NEWSCAST-ENDPOINTS)))
+(def position (atom 0))
 
-(defn get-podcasts []
-  (or (:podcasts @cache) (get-resources PODCAST-ENDPOINTS)))
+(def STEP 5)
 
 (defn add-to-cache []
-  (let [newscasts (get-resources NEWSCAST-ENDPOINTS)
-        podcasts (get-resources PODCAST-ENDPOINTS)]
+  (let [pos @position
+        indices (take STEP (drop pos (cycle (range 0 (dec (count ENDPOINTS))))))
+        endoints-to-fetch (mapv ENDPOINTS indices)
+        data (get-resources endoints-to-fetch)]
     (do
-      (swap! cache assoc :newscasts newscasts :podcasts podcasts)
+      (swap! cache merge data)
+      (swap! position + STEP)
       (println "cache refreshed"))))
+
+(defn get-data-of-type [type]
+  (select-keys @cache (for [[k v] @cache :when (= type (-> v :type))] k)))
+
+(defn get-newscasts []
+  (or (get-data-of-type :newscast) (get-resources NEWSCAST-ENDPOINTS)))
+
+(defn get-podcasts []
+  (or (get-data-of-type :podcast) (get-resources PODCAST-ENDPOINTS)))
