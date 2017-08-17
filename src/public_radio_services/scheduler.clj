@@ -3,7 +3,7 @@
             [clj-http.client :as client]
             [public-radio-services.services.fetcher :as f]))
 
-(def my-pool (mk-pool :cpu-count 4))
+(def my-pool (mk-pool :cpu-count 8))
 
 (defn get-requests []
   (client/get
