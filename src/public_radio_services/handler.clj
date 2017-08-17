@@ -143,5 +143,5 @@
   (let [port (Integer. ^int (or port (env :port) 5000))]
     (jetty/run-jetty #'app {:port port :join? false})
     (println "app start")
-    (scheduler/pre-cache-scheduler)
+    (scheduler/pre-cache-scheduler-2)
     ))

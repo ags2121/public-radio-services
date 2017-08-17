@@ -184,7 +184,7 @@
 (defn get-podcasts []
   (or (:podcasts @cache) (get-resources PODCAST-ENDPOINTS)))
 
-(defn add-to-cache []
+(defn add-to-cache [x]
   (let [newscasts (get-resources NEWSCAST-ENDPOINTS)
         podcasts (get-resources PODCAST-ENDPOINTS)]
     (swap! cache assoc :newscasts newscasts :podcasts podcasts)
