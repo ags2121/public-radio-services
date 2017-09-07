@@ -53,8 +53,7 @@
       (assoc-in response [:headers "Access-Control-Allow-Credentials"] "true"))))
 
 (def app (-> app-routes
-             (wrap-cors :access-control-allow-origin [#"http://localhost(:\d{2,4})" #"https?://www.publicradio.info" #"https?://www.publicradioservices.info"]
-                        :access-control-allow-methods [:get :post])
+             (wrap-cors identity)
              wrap-cookies
              wrap-params
              wrap-allow-cors-credentials))
