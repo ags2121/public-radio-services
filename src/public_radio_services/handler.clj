@@ -59,6 +59,10 @@
              wrap-params
              wrap-allow-cors-credentials))
 
+(defn init []
+  (dotimes [_ (Math/ceil (/ (count f/ENDPOINTS) f/STEP))] (f/add-to-cache))
+  (scheduler/pre-cache-scheduler))
+
 (defn -main [& [port]]
   (let [port (Integer. ^int (or port (env :port) 5000))]
     (dotimes [_ (Math/ceil (/ (count f/ENDPOINTS) f/STEP))] (f/add-to-cache))

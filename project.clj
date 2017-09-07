@@ -31,8 +31,11 @@
 
   :min-lein-version "2.0.0"
   :plugins [[lein-ring "0.9.7"]
-            [lein-environ "1.0.1"]]
+            [lein-environ "1.0.1"]
+            [lein-beanstalk "0.2.7"]
+            ]
   :ring {:handler      public-radio-services.handler/app
+         :init         public-radio-services.handler/init
          :auto-reload? true
          :nrepl        {:start? true
                         :port   9998}}
