@@ -154,6 +154,15 @@
    (xml-resource :bird-note :podcast "http://feeds.feedburner.com/birdnote/OYfP")
    (xml-resource :dead-pundits :podcast "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
    (xml-resource :upstream :podcast "http://feeds.soundcloud.com/users/soundcloud:users:200783566/sounds.rss")
+   (xml-resource :bafflercasts :podcast "https://thebaffler.com/feed/podcast")
+   (xml-resource :tarfu :podcast "https://tarfureport.libsyn.com/rss")
+   (xml-resource :moderate-rebels :podcast "https://moderaterebels.libsyn.com/rss")
+   (xml-resource :delete-your-acct :podcast "https://deleteyouraccount.libsyn.com/showrss")
+   (xml-resource :citations :podcast "https://citationsneeded.libsyn.com/rss")
+   (xml-resource :by-any-means-necessary :podcast "https://www.spreaker.com/show/1843722/episodes/feed")
+   (xml-resource :kt-halps :podcast "https://feeds.soundcloud.com/users/soundcloud:users:54379684/sounds.rss")
+   (xml-resource :discoursecollective :podcast "https://feeds.soundcloud.com/users/soundcloud:users:287122696/sounds.rss")
+   (xml-resource :street-fight :podcast "https://feeds.feedburner.com/streetfightradio")
    ])
 
 (def ENDPOINTS (into [] (concat NEWSCAST-ENDPOINTS PODCAST-ENDPOINTS)))
@@ -183,19 +192,31 @@
 
 (def cache (atom {}))
 
-(def position (atom 0))
+(def newscasts-position (atom 0))
 
-(def STEP 5)
+(def podcasts-position (atom 0))
 
-(defn add-to-cache []
+(def all-position (atom 0))
+
+(defn add-to-cache [position step endpoints]
   (let [pos @position
-        indices (take STEP (drop pos (cycle (range 0 (dec (count ENDPOINTS))))))
-        endoints-to-fetch (mapv ENDPOINTS indices)
+        indices (take step (drop pos (cycle (range 0 (dec (count endpoints))))))
+        endoints-to-fetch (mapv endpoints indices)
         data (get-resources endoints-to-fetch)]
     (do
       (swap! cache merge data)
-      (swap! position + STEP)
+      (swap! position + step)
       (println "cache refreshed with: " (keys data)))))
+
+(defn add-all-to-cache []
+  (let [step 10]
+    (dotimes [_ (Math/ceil (/ (count ENDPOINTS) step))] (add-to-cache all-position step ENDPOINTS))))
+
+(defn add-newscasts-to-cache []
+  (add-to-cache newscasts-position 5 NEWSCAST-ENDPOINTS))
+
+(defn add-podcasts-to-cache []
+  (add-to-cache podcasts-position 2 PODCAST-ENDPOINTS))
 
 (defn get-data-of-type [type]
   (select-keys @cache (for [[k v] @cache :when (= type (-> v :type))] k)))

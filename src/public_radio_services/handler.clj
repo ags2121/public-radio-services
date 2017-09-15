@@ -141,8 +141,9 @@
 (defn -main [& [port]]
   (db/migrate)
   (let [port (Integer. ^int (or port (env :port) 5000))]
-    (dotimes [_ (Math/ceil (/ (count f/ENDPOINTS) f/STEP))] (f/add-to-cache))
+    (f/add-all-to-cache)
     (jetty/run-jetty #'app {:port port :join? false})
     (println "app start")
-    (scheduler/pre-cache-scheduler)
+    (scheduler/pre-cache-pod-scheduler)
+    (scheduler/pre-cache-news-scheduler)
     ))
