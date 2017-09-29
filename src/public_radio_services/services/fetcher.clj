@@ -102,7 +102,8 @@
 
 (def NEWSCAST-ENDPOINTS
   [
-   (api-resource :npr NPR-ENDPOINT)
+   ;(api-resource :npr NPR-ENDPOINT)
+   (xml-resource :npr :newscast "https://www.npr.org/rss/podcast.php?id=500005")
    (bbc-news-summary-resource :bbc-headlines "https://tunein.com/radio/BBC-News-Summary-p193595/")
    (xml-resource :pri :newscast "http://www.pri.org/programs/3704/episodes/feed")
    (xml-resource :bbc-global :newscast "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
