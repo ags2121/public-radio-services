@@ -116,13 +116,17 @@
    ;(xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
    ;(xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
    ;(xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
+   ;(xml-resource :radiolab :podcast "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
+   #_(xml-resource :pro-publica :podcast "http://feeds.propublica.org/propublica/podcast"
+                 (comp
+                   (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
+                   (override-title "ProPublica")))
    (xml-resource :london-review :podcast "https://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
    (xml-resource :rumble :podcast "https://www.rumblestripvermont.com/feed/")
    (xml-resource :reveal :podcast "http://feeds.revealradio.org/revealpodcast.xml")
    (xml-resource :nypl :podcast "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
    (xml-resource :in-our-time :podcast "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source :podcast "http://radioopensource.org/feed/" (override-title "Open Source"))
-   (xml-resource :radiolab :podcast "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
    (xml-resource :homebrave :podcast "http://feeds.feedburner.com/homebravepodcast")
    (xml-resource :guardian :podcast "https://www.theguardian.com/news/series/the-audio-long-read/podcast.xml"
                  (comp
@@ -144,10 +148,6 @@
    (xml-resource :ben-dixon-show :podcast "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
    (xml-resource :eternal-now :podcast "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
    (xml-resource :honky-tonk :podcast "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
-   (xml-resource :pro-publica :podcast "http://feeds.propublica.org/propublica/podcast"
-                 (comp
-                   (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
-                   (override-title "ProPublica")))
    (xml-resource :intercept :podcast "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
    (xml-resource :between-the-ears :podcast "http://www.bbc.co.uk/programmes/b006x2tq/episodes/downloads.rss")
    (xml-resource :the-essay :podcast "http://www.bbc.co.uk/programmes/b006x3hl/episodes/downloads.rss")
