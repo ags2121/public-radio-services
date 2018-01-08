@@ -156,7 +156,6 @@
    (xml-resource :dead-pundits :podcast "http://feeds.soundcloud.com/users/soundcloud:users:292981343/sounds.rss")
    (xml-resource :upstream :podcast "http://feeds.soundcloud.com/users/soundcloud:users:200783566/sounds.rss")
    (xml-resource :bafflercasts :podcast "https://thebaffler.com/feed/podcast")
-   (xml-resource :tarfu :podcast "https://tarfureport.libsyn.com/rss")
    (xml-resource :moderate-rebels :podcast "https://moderaterebels.libsyn.com/rss")
    (xml-resource :delete-your-acct :podcast "https://deleteyouraccount.libsyn.com/showrss")
    (xml-resource :citations :podcast "https://citationsneeded.libsyn.com/rss")
