@@ -63,11 +63,11 @@
 
 (defn- ^:private bbc-news-summary-parser [body]
   (let [data (json/read-str (second (re-find #"window.INITIAL_STATE=(.+);"
-                                   (-> (html/html-resource (io/input-stream (.getBytes body)))
-                                       (html/select [:head :script])
-                                       second
-                                       :content
-                                       first))))
+                                     (-> (html/html-resource (io/input-stream (.getBytes body)))
+                                         (html/select [:head :script])
+                                         second
+                                         :content
+                                         first))))
         data-id (-> data
                     (get "profiles")
                     first
@@ -108,8 +108,8 @@
    (xml-resource :pri :newscast "http://www.pri.org/programs/3704/episodes/feed")
    (xml-resource :bbc-global :newscast "http://www.bbc.co.uk/programmes/p02nq0gn/episodes/downloads.rss")
    (xml-resource :democracynow :newscast "http://www.democracynow.org/podcast.xml")
-   (xml-resource :bbc-africa :newscast "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")
-   ])
+   (xml-resource :bbc-africa :newscast "http://www.bbc.co.uk/programmes/p02nrtyw/episodes/downloads.rss")])
+
 
 (def PODCAST-ENDPOINTS
   [
@@ -145,7 +145,6 @@
                  (update-attribute :episodeTitle #(str/replace % #"\s\(\d{1}/\d{2}/\d{2}\)" "")))
    (xml-resource :desert-island-discs :podcast "http://www.bbc.co.uk/programmes/b006qnmr/episodes/downloads.rss")
    (xml-resource :resident-advisor :podcast "https://www.residentadvisor.net/xml/podcast.xml" (override-title "Resident Advisor"))
-   (xml-resource :ben-dixon-show :podcast "http://www.spreaker.com/user/7933116/episodes/feed" (override-title "The Ben Dixon Show"))
    (xml-resource :eternal-now :podcast "https://wfmu.org/podcast/AO.xml" (override-title "The Eternal Now"))
    (xml-resource :honky-tonk :podcast "https://wfmu.org/podcast/HG.xml" (override-title "Honky Tonk Radio Girl"))
    (xml-resource :intercept :podcast "http://feeds.megaphone.fm/intercepted" (override-title "Intercepted"))
@@ -162,8 +161,11 @@
    (xml-resource :by-any-means-necessary :podcast "https://www.spreaker.com/show/1843722/episodes/feed")
    (xml-resource :kt-halps :podcast "https://feeds.soundcloud.com/users/soundcloud:users:54379684/sounds.rss")
    (xml-resource :discoursecollective :podcast "https://feeds.soundcloud.com/users/soundcloud:users:287122696/sounds.rss")
-   (xml-resource :street-fight :podcast "https://feeds.feedburner.com/streetfightradio")
-   ])
+   (xml-resource :art-and-labor :podcast "http://artandlaborpodcast.com/feed/podcast")
+   (xml-resource :trillbilly :podcast "http://feeds.soundcloud.com/users/soundcloud:users:300222802/sounds.rss")
+   (xml-resource :street-fight :podcast "http://feeds.feedburner.com/streetfightradio?format=xml")])
+
+
 
 (def ENDPOINTS (into [] (concat NEWSCAST-ENDPOINTS PODCAST-ENDPOINTS)))
 
