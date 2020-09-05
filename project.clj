@@ -26,8 +26,8 @@
                  [buddy/buddy-auth "1.2.0"]
                  [buddy/buddy-hashers "1.0.0"]
                  [clj-http "3.6.1"]
-                 [enlive "1.1.6"]
-                 ]
+                 [enlive "1.1.6"]]
+
   :main public-radio-services.handler
   ;:repositories {"my.datomic.com" {:url      "https://my.datomic.com/repo"
   ;                                 :username :env/datomic_username

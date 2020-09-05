@@ -113,18 +113,10 @@
 
 (def PODCAST-ENDPOINTS
   [
-   ;(xml-resource :factmag "http://factmag.squarespace.com/factmixes?format=RSS" (override-title "FACT Mixes"))
-   ;(xml-resource :boiler-room "http://feeds.feedburner.com/boilerroompodcast" (update-attribute :showTitle capitalize-words))
-   ;(xml-resource :call-chelsea-peretti "http://feeds.feedburner.com/CallChelseaPeretti")
-   ;(xml-resource :radiolab :podcast "http://feeds.wnyc.org/radiolab" (update-attribute :episodeTitle str/trim))
-   #_(xml-resource :pro-publica :podcast "http://feeds.propublica.org/propublica/podcast"
-                 (comp
-                   (update-attribute :episodeTitle #(str/replace % "The Breakthrough: " ""))
-                   (override-title "ProPublica")))
    (xml-resource :london-review :podcast "https://cdn.lrb.co.uk/feeds/podcasts" (override-title "The London Review"))
    (xml-resource :rumble :podcast "https://www.rumblestripvermont.com/feed/")
    (xml-resource :reveal :podcast "http://feeds.revealradio.org/revealpodcast.xml")
-   (xml-resource :nypl :podcast "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast"))
+   ; (xml-resource :nypl :podcast "http://newyorkpubliclibrary.libsyn.com/rss" (override-title "The NYPL Podcast")) ; broken
    (xml-resource :in-our-time :podcast "http://www.bbc.co.uk/programmes/b006qykl/episodes/downloads.rss")
    (xml-resource :open-source :podcast "http://radioopensource.org/feed/" (override-title "Open Source"))
    (xml-resource :homebrave :podcast "http://feeds.feedburner.com/homebravepodcast")
@@ -224,7 +216,7 @@
   (select-keys @cache (for [[k v] @cache :when (= type (-> v :type))] k)))
 
 (defn get-newscasts []
-  (or (get-data-of-type :newscast) (get-resources NEWSCAST-ENDPOINTS)))
+  (get-resources NEWSCAST-ENDPOINTS))
 
 (defn get-podcasts []
-  (or (get-data-of-type :podcast) (get-resources PODCAST-ENDPOINTS)))
+  (get-resources PODCAST-ENDPOINTS))
