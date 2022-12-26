@@ -12,4 +12,7 @@ curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
 # open chrome browser
 open -na Google\ Chrome --args --user-data-dir=/tmp/temporary-chrome-profile-dir --disable-web-security
 
+docker build -t hello-world .  
+docker run -e NUM_WORKERS=8 -p 9000:8080 hello-world 
+
 ```
