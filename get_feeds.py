@@ -21,8 +21,12 @@ def _perform_web_requests(feeds, num_workers):
                 url = feed["url"]
                 feed_result = feedparser.parse(feed["url"])
 
+                title = feed_result.feed.title
+                description = feed_result.feed.description
+
                 audio_link = None
-                updated = None
+                episode_title = None
+                pub_date = None
                 try:
                     latest_entry = feed_result["entries"][0]
                     links = latest_entry["links"]
@@ -30,12 +34,16 @@ def _perform_web_requests(feeds, num_workers):
                         link["href"] for link in links if link["type"] == "audio/mpeg"
                     ]
                     audio_link = audio_links[0]
-                    updated = latest_entry["updated"]
+                    pub_date = latest_entry.published
+                    episode_title = latest_entry["title"]
                 except:
                     pprint.pprint("Error fetching links for " + url)
 
-                feed["audio_link"] = audio_link
-                feed["updated"] = updated
+                feed["url"] = audio_link
+                feed["pubDate"] = pub_date
+                feed["showTitle"] = title
+                feed["showDescription"] = description
+                feed["episodeTitle"] = episode_title
 
                 self.results.append(feed)
                 self.queue.task_done()
@@ -74,11 +82,6 @@ def perform_web_requests(num_workers: int):
             "name": "reveal",
             "type": "podcast",
             "url": "http://feeds.revealradio.org/revealpodcast.xml",
-        },
-        {
-            "name": "nypl",
-            "type": "podcast",
-            "url": "http://newyorkpubliclibrary.libsyn.com/rss",
         },
         {
             "name": "in-our-time",
